@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>陀螺大賽 榮耀配置圖產生器</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --neon-blue: #00e5ff;
+            --neon-purple: #9c27b0;
+            --gold: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            --silver: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            --bronze: linear-gradient(135deg, #d4a373 0%, #faedcd 100%);
+            --rank-gold-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
+            --rank-silver-shadow: 0 0 20px rgba(192, 192, 192, 0.7);
+            --rank-bronze-shadow: 0 0 20px rgba(205, 127, 50, 0.7);
+            --poster-bg: linear-gradient(180deg, #0a0a2a 0%, #000000 100%);
+            --showcase-box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.1), 0 0 15px rgba(255, 255, 255, 0.2);
+        }
+
+        body {
+            font-family: 'Microsoft JhengHei', sans-serif;
+            background-color: #121212;
+            color: white;
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            margin: 0;
+            user-select: none;
+        }
+
+        /* 左側控制面板 */
+        .controls {
+            flex: 1;
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 320px;
+            overflow-y: auto;
+            max-height: 95vh;
+        }
+
+        .controls h2 {
+            margin-top: 0;
+            font-size: 20px;
+            text-align: center;
+        }
+
+        .controls label {
+            font-weight: bold;
+            font-size: 14px;
+            color: #aaa;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .controls input, .controls select {
+            width: 100%;
+            padding: 8px;
+            background: #444;
+            border: 1px solid #555;
+            color: white;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        .file-upload-wrapper {
+            margin-bottom: 10px;
+            border: 1px dashed #777;
+            border-radius: 5px;
+            padding: 10px;
+            background: #3a3a3a;
+        }
+
+        .file-upload-wrapper label {
+            color: #ccc;
+        }
+
+        button {
+            background: #00e5ff;
+            color: black;
+            border: none;
+            padding: 12px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background: #00b3cc;
+        }
+
+        /* 右側海報預覽區 */
+        .poster-container {
+            flex: 3;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        #poster {
+            width: 800px;
+            height: 1000px;
+            background: var(--poster-bg);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* 霓虹網格背景 */
+        .grid-bg {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 50%;
+            background-image: 
+                linear-gradient(rgba(0, 229, 255, 0.2) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 229, 255, 0.2) 1px, transparent 1px);
+            background-size: 40px 40px;
+            transform: perspective(500px) rotateX(60deg);
+            transform-origin: bottom;
+            z-index: 1;
+        }
+
+        /* 標題 */
+        .header-title {
+            z-index: 2;
+            text-align: center;
+            margin-top: 40px;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+        }
+
+        .header-title h1 {
+            font-size: 36px;
+            margin: 0;
+            letter-spacing: 2px;
+        }
+
+        .header-title h2 {
+            font-size: 42px;
+            margin: 5px 0 0 0;
+            letter-spacing: 5px;
+        }
+
+        /* 主要內容區 */
+        .content {
+            display: flex;
+            width: 95%;
+            margin-top: 30px;
+            z-index: 2;
+            flex: 1;
+        }
+
+        .player-img-wrapper {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            padding-bottom: 80px;
+        }
+
+        .player-img-wrapper img {
+            max-width: 100%;
+            max-height: 600px;
+            object-fit: contain;
+        }
+
+        /* 零件展示櫃 */
+        .showcase {
+            flex: 1.2;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid #aaa;
+            border-radius: 20px;
+            box-shadow: var(--showcase-box-shadow);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            gap: 15px;
+            margin-bottom: 80px;
+        }
+
+        .showcase-row {
+            display: flex;
+            flex-direction: column;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            gap: 10px;
+        }
+
+        .showcase-row-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 5px;
+        }
+
+        .configuration-tag {
+            font-size: 16px;
+            font-weight: bold;
+            color: #eee;
+            letter-spacing: 1px;
+        }
+
+        .parts-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .part-slot {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.4) 100%);
+            border: 1px solid rgba(255,255,255,0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        
+        .part-slot img {
+            max-height: 85%;
+            max-width: 85%;
+            object-fit: contain;
+        }
+
+        .part-label {
+            position: absolute;
+            bottom: -22px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            color: #ccc;
+            white-space: nowrap;
+        }
+
+        /* 底部名牌 */
+        .nameplate {
+            position: absolute;
+            bottom: 30px;
+            width: 420px;
+            height: 110px;
+            border-radius: 5px;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            border: 2px solid rgba(255,255,255,0.5);
+            color: black;
+        }
+
+        .nameplate-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .nameplate-rank-name {
+            font-size: 30px;
+            font-weight: 900;
+            letter-spacing: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* 左下角Logo位 */
+        .logo-placeholder {
+            position: absolute;
+            left: 20px;
+            bottom: 20px;
+            z-index: 3;
+            width: 160px;
+        }
+
+        .logo-text {
+            color: white;
+            font-style: italic;
+            text-align: center;
+            text-shadow: 0 0 10px var(--neon-purple);
+        }
+
+        .logo-red-outline {
+            border: 3px solid red;
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: inline-block;
+            text-transform: uppercase;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
+        }
+
+        /* 動態顏色樣式 */
+        .rank-gold {
+            background: var(--gold);
+            border-color: #fffacd;
+            color: black;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.8), 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+        .rank-silver {
+            background: var(--silver);
+            border-color: #ffffff;
+            color: black;
+            box-shadow: 0 10px 30px rgba(192, 192, 192, 0.8), 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+        .rank-bronze {
+            background: var(--bronze);
+            border-color: #fefae0;
+            color: black;
+            box-shadow: 0 10px 30px rgba(205, 127, 50, 0.8), 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+
+        .showcase-gold {
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.6), var(--showcase-box-shadow);
+        }
+        .showcase-silver {
+            border-color: #c0c0c0;
+            box-shadow: 0 0 20px rgba(192, 192, 192, 0.6), var(--showcase-box-shadow);
+        }
+        .showcase-bronze {
+            border-color: #cd7f32;
+            box-shadow: 0 0 20px rgba(205, 127, 50, 0.6), var(--showcase-box-shadow);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="controls">
+        <h2>設定面板</h2>
+        
+        <label>
+            大標題 (屆數部分):
+            <input type="text" id="input-edition" value="第一屆" oninput="updateText('edition')">
+        </label>
+        
+        <label>
+            名次配置:
+            <select id="input-rank" onchange="updateRank()">
+                <option value="gold">冠軍</option>
+                <option value="silver">亞軍</option>
+                <option value="bronze">季軍</option>
+            </select>
+        </label>
+
+        <label>
+            選手姓名 (名牌上顯示):
+            <input type="text" id="input-name" value="郭嘉弘" oninput="updateText('name')">
+        </label>
+
+        <label>
+            上傳選手去背照片:
+            <input type="file" accept="image/*" onchange="previewImage(event, 'player-img')">
+        </label>
+
+        <div class="file-upload-wrapper">
+            <label>配置 1 - Armor Layer (去背圖):</label>
+            <input type="file" accept="image/*" onchange="previewImage(event, 'part-conf1-layer')">
+            <label>配置 1 - Bit Chip (去背圖):</label>
+            <input type="file" accept="image/*" onchange="previewImage(event, 'part-conf1-chip')">
+            <label>配置 1 - Performance Tip (去背圖):</label>
+            <input type="file" accept="image/*" onchange="previewImage(event, 'part-conf1-tip')">
+        </div>
+
+        <div class="file-upload-wrapper">
+            <label>配置 2 - Armor Layer (去背圖):</label>
+            <input type="file" accept="image/*" onchange="previewImage(event, 'part-conf2-layer')">
+            <label>配置 2 - Bit Chip (去背圖):</label>
+            <input type="file" accept="image/*" onchange="previewImage(event, 'part-conf2-chip')">
+            <label>配置 2 - Performance Tip (去背圖):</label>
+            <input type="file" accept="image/*" onchange="previewImage(event, 'part-conf2-tip')">
+        </div>
+
+        <div class="file-upload-wrapper">
+            <label>配置 3 - Armor Layer (去背圖):</label>
+            <input type="file" accept="image/*" onchange="previewImage(event, 'part-conf3-layer')">
+            <label>配置 3 - Bit Chip (去背圖):</label>
+            <input type="file" accept="image/*" onchange="previewImage(event, 'part-conf3-chip')">
+            <label>配置 3 - Performance Tip (去背圖):</label>
+            <input type="file" accept="image/*" onchange="previewImage(event, 'part-conf3-tip')">
+        </div>
+
+        <button onclick="downloadImage()">下載為圖片 去吧!</button>
+    </div>
+
+    <div class="poster-container">
+        <div id="poster">
+            <div class="grid-bg"></div>
+            
+            <div class="header-title">
+                <h1>2026 鬥陣仔 <span id="display-edition">第一屆</span></h1>
+                <h2>陀螺戰鬥大賽 榮耀</h2>
+            </div>
+
+            <div class="content">
+                <div class="player-img-wrapper">
+                    <img id="player-img" src="https://via.placeholder.com/400x600.png?text=選手照片" alt="選手">
+                </div>
+                
+                <div class="showcase showcase-gold" id="showcase-box">
+                    
+                    <div class="showcase-row">
+                        <div class="showcase-row-header">
+                            <span class="configuration-tag">配置 1</span>
+                        </div>
+                        <div class="parts-container">
+                            <div class="part-slot">
+                                <img id="part-conf1-layer" src="https://via.placeholder.com/100.png?text=Layer" alt="Layer 1">
+                                <span class="part-label">Armor Layer</span>
+                            </div>
+                            <div class="part-slot">
+                                <img id="part-conf1-chip" src="https://via.placeholder.com/100.png?text=Chip" alt="Chip 1">
+                                <span class="part-label">Bit Chip</span>
+                            </div>
+                            <div class="part-slot">
+                                <img id="part-conf1-tip" src="https://via.placeholder.com/100.png?text=Tip" alt="Tip 1">
+                                <span class="part-label">Performance Tip</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="showcase-row">
+                        <div class="showcase-row-header">
+                            <span class="configuration-tag">配置 2</span>
+                        </div>
+                        <div class="parts-container">
+                            <div class="part-slot">
+                                <img id="part-conf2-layer" src="https://via.placeholder.com/100.png?text=Layer" alt="Layer 2">
+                                <span class="part-label">Armor Layer</span>
+                            </div>
+                            <div class="part-slot">
+                                <img id="part-conf2-chip" src="https://via.placeholder.com/100.png?text=Chip" alt="Chip 2">
+                                <span class="part-label">Bit Chip</span>
+                            </div>
+                            <div class="part-slot">
+                                <img id="part-conf2-tip" src="https://via.placeholder.com/100.png?text=Tip" alt="Tip 2">
+                                <span class="part-label">Performance Tip</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="showcase-row">
+                        <div class="showcase-row-header">
+                            <span class="configuration-tag">配置 3</span>
+                        </div>
+                        <div class="parts-container">
+                            <div class="part-slot">
+                                <img id="part-conf3-layer" src="https://via.placeholder.com/100.png?text=Layer" alt="Layer 3">
+                                <span class="part-label">Armor Layer</span>
+                            </div>
+                            <div class="part-slot">
+                                <img id="part-conf3-chip" src="https://via.placeholder.com/100.png?text=Chip" alt="Chip 3">
+                                <span class="part-label">Bit Chip</span>
+                            </div>
+                            <div class="part-slot">
+                                <img id="part-conf3-tip" src="https://via.placeholder.com/100.png?text=Tip" alt="Tip 3">
+                                <span class="part-label">Performance Tip</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="nameplate rank-gold" id="nameplate-box">
+                <div class="nameplate-title">鬥陣仔 大會勝者</div>
+                <div class="nameplate-rank-name">
+                    <span id="display-rank">冠軍</span>
+                    -
+                    <span id="display-name">郭嘉弘</span>
+                </div>
+            </div>
+
+            <div class="logo-placeholder">
+                <div class="logo-text">
+                    鬥陣仔
+                    <br>
+                    <span class="logo-red-outline">拼甘落</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 即時更新文字
+        function updateText(type) {
+            if(type === 'edition') document.getElementById('display-edition').innerText = document.getElementById('input-edition').value;
+            if(type === 'name') document.getElementById('display-name').innerText = document.getElementById('input-name').value;
+        }
+
+        // 更新名次與顏色
+        function updateRank() {
+            const rankSelect = document.getElementById('input-rank');
+            const nameplate = document.getElementById('nameplate-box');
+            const showcase = document.getElementById('showcase-box');
+            
+            // 清除舊顏色
+            nameplate.className = "nameplate";
+            showcase.className = "showcase";
+
+            // 設定新顏色
+            nameplate.classList.add(`rank-${rankSelect.value}`);
+            showcase.classList.add(`showcase-${rankSelect.value}`);
+            
+            // 更新名次文字
+            let rankText = rankSelect.options[rankSelect.selectedIndex].text;
+            document.getElementById('display-rank').innerText = rankText;
+        }
+
+        // 處理圖片上傳預覽
+        function previewImage(event, targetId) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                const output = document.getElementById(targetId);
+                output.src = reader.result;
+            }
+            if(event.target.files[0]) {
+                reader.readAsDataURL(event.target.files[0]);
+            }
+        }
+
+        // 截圖下載功能 (使用 html2canvas)
+        function downloadImage() {
+            const poster = document.getElementById('poster');
+            const nameSelect = document.getElementById('input-name');
+            const rankSelect = document.getElementById('input-rank');
+            const rankText = rankSelect.options[rankSelect.selectedIndex].text;
+            const edition = document.getElementById('input-edition').value;
+            const fileName = `鬥陣仔_${edition}_${rankText}_${nameSelect.value}.png`;
+
+            html2canvas(poster, {
+                scale: 2, // 提高畫質
+                useCORS: true, // 支援跨域圖片
+                backgroundColor: null // 保持透明背景 (如果有)
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = fileName;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                console.log('去去圖生成！');
+            });
+        }
+    </script>
+</body>
+</html>
