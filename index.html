@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>陀螺大賽 榮耀配置圖產生器</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://unpkg.com/@imgly/background-removal@1.4.3/dist/browser/@imgly/background-removal.js"></script>
+
     <style>
         :root {
             --neon-blue: #00e5ff;
@@ -240,16 +242,6 @@
             object-fit: contain;
         }
 
-        .part-label {
-            position: absolute;
-            bottom: -22px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 10px;
-            color: #ccc;
-            white-space: nowrap;
-        }
-
         /* 底部名牌 */
         .nameplate {
             position: absolute;
@@ -307,6 +299,26 @@
             box-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
         }
 
+        /* 加載指示器樣式 */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            color: var(--neon-blue);
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 0 0 10px var(--neon-blue);
+            flex-direction: column;
+            gap: 15px;
+        }
+
         /* 動態顏色樣式 */
         .rank-gold {
             background: var(--gold);
@@ -327,22 +339,18 @@
             box-shadow: 0 10px 30px rgba(205, 127, 50, 0.8), 0 0 15px rgba(255, 255, 255, 0.5);
         }
 
-        .showcase-gold {
-            border-color: #ffd700;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.6), var(--showcase-box-shadow);
-        }
-        .showcase-silver {
-            border-color: #c0c0c0;
-            box-shadow: 0 0 20px rgba(192, 192, 192, 0.6), var(--showcase-box-shadow);
-        }
-        .showcase-bronze {
-            border-color: #cd7f32;
-            box-shadow: 0 0 20px rgba(205, 127, 50, 0.6), var(--showcase-box-shadow);
-        }
+        .showcase-gold { border-color: #ffd700; box-shadow: 0 0 20px rgba(255, 215, 0, 0.6), var(--showcase-box-shadow); }
+        .showcase-silver { border-color: #c0c0c0; box-shadow: 0 0 20px rgba(192, 192, 192, 0.6), var(--showcase-box-shadow); }
+        .showcase-bronze { border-color: #cd7f32; box-shadow: 0 0 20px rgba(205, 127, 50, 0.6), var(--showcase-box-shadow); }
 
     </style>
 </head>
 <body>
+
+    <div class="loading-overlay" id="loading-overlay">
+        <div>正在為您施展去背魔法，請稍候...</div>
+        <div style="font-size: 16px; font-weight: normal; color: #ccc;">（第一次加載需要一點時間）</div>
+    </div>
 
     <div class="controls">
         <h2>設定面板</h2>
@@ -362,40 +370,40 @@
         </label>
 
         <label>
-            選手姓名 (名牌上顯示):
+            選手姓名:
             <input type="text" id="input-name" value="郭嘉弘" oninput="updateText('name')">
         </label>
 
         <label>
-            上傳選手去背照片:
-            <input type="file" accept="image/*" onchange="previewImage(event, 'player-img')">
+            上傳選手照片 (自動去背):
+            <input type="file" accept="image/*" onchange="previewImageAutoBg(event, 'player-img')">
         </label>
 
         <div class="file-upload-wrapper">
-            <label>配置 1 - Armor Layer (去背圖):</label>
-            <input type="file" accept="image/*" onchange="previewImage(event, 'part-conf1-layer')">
-            <label>配置 1 - Bit Chip (去背圖):</label>
-            <input type="file" accept="image/*" onchange="previewImage(event, 'part-conf1-chip')">
-            <label>配置 1 - Performance Tip (去背圖):</label>
-            <input type="file" accept="image/*" onchange="previewImage(event, 'part-conf1-tip')">
+            <label>配置 1 - 盔甲層 (自動去背):</label>
+            <input type="file" accept="image/*" onchange="previewImageAutoBg(event, 'part-conf1-layer')">
+            <label>配置 1 - 晶片 (自動去背):</label>
+            <input type="file" accept="image/*" onchange="previewImageAutoBg(event, 'part-conf1-chip')">
+            <label>配置 1 - 性能尖 (自動去背):</label>
+            <input type="file" accept="image/*" onchange="previewImageAutoBg(event, 'part-conf1-tip')">
         </div>
 
         <div class="file-upload-wrapper">
-            <label>配置 2 - Armor Layer (去背圖):</label>
-            <input type="file" accept="image/*" onchange="previewImage(event, 'part-conf2-layer')">
-            <label>配置 2 - Bit Chip (去背圖):</label>
-            <input type="file" accept="image/*" onchange="previewImage(event, 'part-conf2-chip')">
-            <label>配置 2 - Performance Tip (去背圖):</label>
-            <input type="file" accept="image/*" onchange="previewImage(event, 'part-conf2-tip')">
+            <label>配置 2 - 盔甲層 (自動去背):</label>
+            <input type="file" accept="image/*" onchange="previewImageAutoBg(event, 'part-conf2-layer')">
+            <label>配置 2 - 晶片 (自動去背):</label>
+            <input type="file" accept="image/*" onchange="previewImageAutoBg(event, 'part-conf2-chip')">
+            <label>配置 2 - 性能尖 (自動去背):</label>
+            <input type="file" accept="image/*" onchange="previewImageAutoBg(event, 'part-conf2-tip')">
         </div>
 
         <div class="file-upload-wrapper">
-            <label>配置 3 - Armor Layer (去背圖):</label>
-            <input type="file" accept="image/*" onchange="previewImage(event, 'part-conf3-layer')">
-            <label>配置 3 - Bit Chip (去背圖):</label>
-            <input type="file" accept="image/*" onchange="previewImage(event, 'part-conf3-chip')">
-            <label>配置 3 - Performance Tip (去背圖):</label>
-            <input type="file" accept="image/*" onchange="previewImage(event, 'part-conf3-tip')">
+            <label>配置 3 - 盔甲層 (自動去背):</label>
+            <input type="file" accept="image/*" onchange="previewImageAutoBg(event, 'part-conf3-layer')">
+            <label>配置 3 - 晶片 (自動去背):</label>
+            <input type="file" accept="image/*" onchange="previewImageAutoBg(event, 'part-conf3-chip')">
+            <label>配置 3 - 性能尖 (自動去背):</label>
+            <input type="file" accept="image/*" onchange="previewImageAutoBg(event, 'part-conf3-tip')">
         </div>
 
         <button onclick="downloadImage()">下載為圖片 去吧!</button>
@@ -422,18 +430,9 @@
                             <span class="configuration-tag">配置 1</span>
                         </div>
                         <div class="parts-container">
-                            <div class="part-slot">
-                                <img id="part-conf1-layer" src="https://via.placeholder.com/100.png?text=Layer" alt="Layer 1">
-                                <span class="part-label">Armor Layer</span>
-                            </div>
-                            <div class="part-slot">
-                                <img id="part-conf1-chip" src="https://via.placeholder.com/100.png?text=Chip" alt="Chip 1">
-                                <span class="part-label">Bit Chip</span>
-                            </div>
-                            <div class="part-slot">
-                                <img id="part-conf1-tip" src="https://via.placeholder.com/100.png?text=Tip" alt="Tip 1">
-                                <span class="part-label">Performance Tip</span>
-                            </div>
+                            <div class="part-slot"><img id="part-conf1-layer" src="https://via.placeholder.com/100.png?text=層" alt="Layer 1"></div>
+                            <div class="part-slot"><img id="part-conf1-chip" src="https://via.placeholder.com/100.png?text=晶" alt="Chip 1"></div>
+                            <div class="part-slot"><img id="part-conf1-tip" src="https://via.placeholder.com/100.png?text=尖" alt="Tip 1"></div>
                         </div>
                     </div>
 
@@ -442,18 +441,9 @@
                             <span class="configuration-tag">配置 2</span>
                         </div>
                         <div class="parts-container">
-                            <div class="part-slot">
-                                <img id="part-conf2-layer" src="https://via.placeholder.com/100.png?text=Layer" alt="Layer 2">
-                                <span class="part-label">Armor Layer</span>
-                            </div>
-                            <div class="part-slot">
-                                <img id="part-conf2-chip" src="https://via.placeholder.com/100.png?text=Chip" alt="Chip 2">
-                                <span class="part-label">Bit Chip</span>
-                            </div>
-                            <div class="part-slot">
-                                <img id="part-conf2-tip" src="https://via.placeholder.com/100.png?text=Tip" alt="Tip 2">
-                                <span class="part-label">Performance Tip</span>
-                            </div>
+                            <div class="part-slot"><img id="part-conf2-layer" src="https://via.placeholder.com/100.png?text=層" alt="Layer 2"></div>
+                            <div class="part-slot"><img id="part-conf2-chip" src="https://via.placeholder.com/100.png?text=晶" alt="Chip 2"></div>
+                            <div class="part-slot"><img id="part-conf2-tip" src="https://via.placeholder.com/100.png?text=尖" alt="Tip 2"></div>
                         </div>
                     </div>
 
@@ -462,18 +452,9 @@
                             <span class="configuration-tag">配置 3</span>
                         </div>
                         <div class="parts-container">
-                            <div class="part-slot">
-                                <img id="part-conf3-layer" src="https://via.placeholder.com/100.png?text=Layer" alt="Layer 3">
-                                <span class="part-label">Armor Layer</span>
-                            </div>
-                            <div class="part-slot">
-                                <img id="part-conf3-chip" src="https://via.placeholder.com/100.png?text=Chip" alt="Chip 3">
-                                <span class="part-label">Bit Chip</span>
-                            </div>
-                            <div class="part-slot">
-                                <img id="part-conf3-tip" src="https://via.placeholder.com/100.png?text=Tip" alt="Tip 3">
-                                <span class="part-label">Performance Tip</span>
-                            </div>
+                            <div class="part-slot"><img id="part-conf3-layer" src="https://via.placeholder.com/100.png?text=層" alt="Layer 3"></div>
+                            <div class="part-slot"><img id="part-conf3-chip" src="https://via.placeholder.com/100.png?text=晶" alt="Chip 3"></div>
+                            <div class="part-slot"><img id="part-conf3-tip" src="https://via.placeholder.com/100.png?text=尖" alt="Tip 3"></div>
                         </div>
                     </div>
 
@@ -525,15 +506,34 @@
             document.getElementById('display-rank').innerText = rankText;
         }
 
-        // 處理圖片上傳預覽
-        function previewImage(event, targetId) {
-            const reader = new FileReader();
-            reader.onload = function() {
-                const output = document.getElementById(targetId);
-                output.src = reader.result;
-            }
-            if(event.target.files[0]) {
-                reader.readAsDataURL(event.target.files[0]);
+        // 處理圖片上傳並自動去背
+        async function previewImageAutoBg(event, targetId) {
+            const loadingOverlay = document.getElementById('loading-overlay');
+            const output = document.getElementById(targetId);
+            const file = event.target.files[0];
+
+            if (!file) return;
+
+            // 顯示加載指示器
+            loadingOverlay.style.display = 'flex';
+            
+            try {
+                // 使用更穩定的 imglyRemoveBackground API
+                const imageBlob = await imglyRemoveBackground(file);
+                const url = URL.createObjectURL(imageBlob);
+                output.src = url;
+                console.log(`去背完成: ${targetId}`);
+            } catch (error) {
+                console.error("圖片處理失敗:", error);
+                alert("圖片去背失敗，先幫您放上原圖。");
+                
+                // 失敗時使用原圖，避免程式卡住
+                const reader = new FileReader();
+                reader.onload = () => output.src = reader.result;
+                reader.readAsDataURL(file);
+            } finally {
+                // 隱藏加載指示器
+                loadingOverlay.style.display = 'none';
             }
         }
 
@@ -547,15 +547,14 @@
             const fileName = `鬥陣仔_${edition}_${rankText}_${nameSelect.value}.png`;
 
             html2canvas(poster, {
-                scale: 2, // 提高畫質
-                useCORS: true, // 支援跨域圖片
-                backgroundColor: null // 保持透明背景 (如果有)
+                scale: 2, 
+                useCORS: true, 
+                backgroundColor: null 
             }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = fileName;
                 link.href = canvas.toDataURL('image/png');
                 link.click();
-                console.log('去去圖生成！');
             });
         }
     </script>
