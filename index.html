@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>陀螺大賽 榮耀配置圖產生器</title>
+    <!-- 引入 html2canvas 截圖庫 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- 引入 imgly-sdk 去背庫 -->
     <script src="https://unpkg.com/@imgly/background-removal@1.4.3/dist/browser/@imgly/background-removal.js"></script>
 
     <style>
@@ -16,7 +18,7 @@
             --bronze: linear-gradient(135deg, #d4a373 0%, #faedcd 100%);
             --rank-gold-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
             --showcase-box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.1), 0 0 15px rgba(255, 255, 255, 0.2);
-            --poster-bg: linear-gradient(180deg, #0a0a2a 0%, #000000 100%);
+            --poster-bg: linear-gradient(180deg, #050515 0%, #000000 100%);
         }
 
         body {
@@ -49,17 +51,21 @@
         .controls input, .controls select { width: 100%; padding: 8px; background: #444; border: 1px solid #555; color: white; border-radius: 5px; box-sizing: border-box; font-size: 14px; }
         
         .file-upload-wrapper { margin-bottom: 10px; border: 1px dashed #777; border-radius: 5px; padding: 10px; background: #3a3a3a; }
-        .file-upload-wrapper label { color: #ccc; }
+        .file-upload-wrapper label { color: #ccc; font-size: 13px; margin-bottom: 3px; }
         
         button { background: #00e5ff; color: black; border: none; padding: 12px; font-weight: bold; border-radius: 5px; cursor: pointer; font-size: 16px; transition: background-color 0.3s; margin-top: 10px;}
         button:hover { background: #00b3cc; }
 
         /* 右側海報預覽區 */
         .poster-container { flex: 3; display: flex; justify-content: center; align-items: flex-start; }
-        #poster { width: 800px; height: 1000px; background: var(--poster-bg); position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        
+        /* 加長海報高度以容納6個配置 */
+        #poster { width: 800px; height: 1300px; background: var(--poster-bg); position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 
-        /* 霓虹網格背景 */
-        .grid-bg { position: absolute; bottom: 0; width: 100%; height: 50%; background-image: linear-gradient(rgba(0, 229, 255, 0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 229, 255, 0.2) 1px, transparent 1px); background-size: 40px 40px; transform: perspective(500px) rotateX(60deg); transform-origin: bottom; z-index: 1; }
+        /* 豐富背景特效：霓虹網格與發光星雲 */
+        .grid-bg { position: absolute; bottom: 0; width: 100%; height: 50%; background-image: linear-gradient(rgba(0, 229, 255, 0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 229, 255, 0.15) 1px, transparent 1px); background-size: 40px 40px; transform: perspective(500px) rotateX(60deg); transform-origin: bottom; z-index: 1; }
+        .glow-orb-1 { position: absolute; width: 600px; height: 600px; background: radial-gradient(circle, rgba(0, 229, 255, 0.1) 0%, transparent 60%); left: -200px; top: 300px; z-index: 1; border-radius: 50%; pointer-events: none; }
+        .glow-orb-2 { position: absolute; width: 500px; height: 500px; background: radial-gradient(circle, rgba(156, 39, 176, 0.15) 0%, transparent 60%); right: -150px; top: 50px; z-index: 1; border-radius: 50%; pointer-events: none; }
 
         /* 標題 */
         .header-title { z-index: 2; text-align: center; margin-top: 40px; text-shadow: 0 0 15px rgba(255, 255, 255, 0.8); }
@@ -67,27 +73,29 @@
         .header-title h2 { font-size: 42px; margin: 5px 0 0 0; letter-spacing: 5px; }
 
         /* 主要內容區 */
-        .content { display: flex; width: 95%; margin-top: 30px; z-index: 2; flex: 1; }
-        .player-img-wrapper { flex: 1; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 80px; }
-        .player-img-wrapper img { max-width: 100%; max-height: 600px; object-fit: contain; }
+        .content { display: flex; width: 95%; margin-top: 30px; z-index: 2; flex: 1; gap: 10px; }
+        .player-img-wrapper { flex: 1; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 120px; position: relative; z-index: 3; }
+        .player-img-wrapper img { max-width: 100%; max-height: 700px; object-fit: contain; filter: drop-shadow(0 0 20px rgba(0,0,0,0.8)); }
 
         /* 零件展示櫃 */
-        .showcase { flex: 1.2; background: rgba(255, 255, 255, 0.05); border: 2px solid #aaa; border-radius: 20px; box-shadow: var(--showcase-box-shadow); backdrop-filter: blur(10px); display: flex; flex-direction: column; padding: 20px; gap: 15px; margin-bottom: 80px; }
-        .showcase-row { display: flex; flex-direction: column; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(0, 0, 0, 0.3); padding: 10px; gap: 10px; }
-        .showcase-row-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 5px; }
-        .configuration-tag { font-size: 16px; font-weight: bold; color: #eee; letter-spacing: 1px; }
-        .parts-container { display: flex; justify-content: space-around; align-items: center; gap: 10px; }
-        .part-slot { width: 90px; height: 90px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.4) 100%); border: 1px solid rgba(255,255,255,0.2); display: flex; justify-content: center; align-items: center; position: relative; }
-        .part-slot img { max-height: 85%; max-width: 85%; object-fit: contain; }
+        .showcase { flex: 1.2; background: rgba(255, 255, 255, 0.03); border: 2px solid #aaa; border-radius: 20px; box-shadow: var(--showcase-box-shadow); backdrop-filter: blur(10px); display: flex; flex-direction: column; padding: 15px; gap: 10px; margin-bottom: 140px; z-index: 3; }
+        .showcase-row { display: flex; flex-direction: column; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(0, 0, 0, 0.3); padding: 8px; gap: 5px; }
+        .showcase-row-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 5px; margin-bottom: 5px; }
+        .configuration-tag { font-size: 14px; font-weight: bold; color: #eee; letter-spacing: 1px; }
+        
+        /* 移除圈圈，只保留圖片容器 */
+        .parts-container { display: flex; justify-content: space-around; align-items: center; gap: 5px; }
+        .part-slot { width: 75px; height: 75px; display: flex; justify-content: center; align-items: center; position: relative; }
+        .part-slot img { max-height: 100%; max-width: 100%; object-fit: contain; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.6)); }
 
-        /* 底部名牌 (加入霸氣螺絲排版) */
+        /* 底部名牌 (霸氣鎖螺絲排版) */
         .nameplate {
             position: absolute;
             bottom: 30px;
             width: 420px;
             height: 120px;
             border-radius: 8px;
-            z-index: 3;
+            z-index: 4;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -98,14 +106,9 @@
             overflow: hidden; 
         }
 
-        /* 畫出四個角落的螺絲 */
         .nameplate::before, .nameplate::after, 
         .nameplate-screws::before, .nameplate-screws::after {
-            content: '';
-            position: absolute;
-            width: 12px; height: 12px;
-            background: #ddd;
-            border-radius: 50%;
+            content: ''; position: absolute; width: 12px; height: 12px; background: #ddd; border-radius: 50%;
             box-shadow: inset 1px 1px 3px #fff, inset -1px -1px 3px #888, 1px 1px 2px rgba(0,0,0,0.5);
         }
         .nameplate::before { top: 10px; left: 10px; }
@@ -134,15 +137,16 @@
 
     <div class="loading-overlay" id="loading-overlay">
         <div>正在為您施展去背魔法，請稍候...</div>
-        <div style="font-size: 16px; font-weight: normal; color: #ccc;">（第一次加載需要一點時間）</div>
+        <div style="font-size: 16px; font-weight: normal; color: #ccc;">（照片較大時可能需要幾十秒）</div>
     </div>
 
+    <!-- 控制面板 -->
     <div class="controls">
         <h2>設定面板</h2>
         
         <label>
             大標題 (屆數部分):
-            <input type="text" id="input-edition" value="第一屆" oninput="updateText('edition')">
+            <input type="text" id="input-edition" value="第三屆" oninput="updateText('edition')">
         </label>
         
         <label>
@@ -161,45 +165,24 @@
 
         <label>
             上傳選手照片 (自動去背):
-            <input type="file" accept="image/*" onchange="previewImageAutoBg(event, 'player-img')">
+            <input type="file" accept="image/*" onchange="previewImageAutoBg(event, 'player-img', true)">
         </label>
 
-        <div class="file-upload-wrapper">
-            <label>配置 1 - 盔甲層 (自動去背):</label>
-            <input type="file" accept="image/*" onchange="previewImageAutoBg(event, 'part-conf1-layer')">
-            <label>配置 1 - 晶片 (自動去背):</label>
-            <input type="file" accept="image/*" onchange="previewImageAutoBg(event, 'part-conf1-chip')">
-            <label>配置 1 - 性能尖 (自動去背):</label>
-            <input type="file" accept="image/*" onchange="previewImageAutoBg(event, 'part-conf1-tip')">
-        </div>
-
-        <div class="file-upload-wrapper">
-            <label>配置 2 - 盔甲層 (自動去背):</label>
-            <input type="file" accept="image/*" onchange="previewImageAutoBg(event, 'part-conf2-layer')">
-            <label>配置 2 - 晶片 (自動去背):</label>
-            <input type="file" accept="image/*" onchange="previewImageAutoBg(event, 'part-conf2-chip')">
-            <label>配置 2 - 性能尖 (自動去背):</label>
-            <input type="file" accept="image/*" onchange="previewImageAutoBg(event, 'part-conf2-tip')">
-        </div>
-
-        <div class="file-upload-wrapper">
-            <label>配置 3 - 盔甲層 (自動去背):</label>
-            <input type="file" accept="image/*" onchange="previewImageAutoBg(event, 'part-conf3-layer')">
-            <label>配置 3 - 晶片 (自動去背):</label>
-            <input type="file" accept="image/*" onchange="previewImageAutoBg(event, 'part-conf3-chip')">
-            <label>配置 3 - 性能尖 (自動去背):</label>
-            <input type="file" accept="image/*" onchange="previewImageAutoBg(event, 'part-conf3-tip')">
-        </div>
+        <!-- 動態生成6組上傳區塊的容器 -->
+        <div id="upload-sections"></div>
 
         <button onclick="downloadImage()">下載為圖片 去吧!</button>
     </div>
 
+    <!-- 海報預覽區 -->
     <div class="poster-container">
         <div id="poster">
             <div class="grid-bg"></div>
+            <div class="glow-orb-1"></div>
+            <div class="glow-orb-2"></div>
             
             <div class="header-title">
-                <h1>2026 鬥陣仔 <span id="display-edition">第一屆</span></h1>
+                <h1>2026 鬥陣仔 <span id="display-edition">第三屆</span></h1>
                 <h2>陀螺戰鬥大賽 榮耀</h2>
             </div>
 
@@ -209,34 +192,7 @@
                 </div>
                 
                 <div class="showcase showcase-gold" id="showcase-box">
-                    
-                    <div class="showcase-row">
-                        <div class="showcase-row-header"><span class="configuration-tag">配置 1</span></div>
-                        <div class="parts-container">
-                            <div class="part-slot"><img id="part-conf1-layer" src="https://via.placeholder.com/100.png?text=層" alt="Layer 1"></div>
-                            <div class="part-slot"><img id="part-conf1-chip" src="https://via.placeholder.com/100.png?text=晶" alt="Chip 1"></div>
-                            <div class="part-slot"><img id="part-conf1-tip" src="https://via.placeholder.com/100.png?text=尖" alt="Tip 1"></div>
-                        </div>
-                    </div>
-
-                    <div class="showcase-row">
-                        <div class="showcase-row-header"><span class="configuration-tag">配置 2</span></div>
-                        <div class="parts-container">
-                            <div class="part-slot"><img id="part-conf2-layer" src="https://via.placeholder.com/100.png?text=層" alt="Layer 2"></div>
-                            <div class="part-slot"><img id="part-conf2-chip" src="https://via.placeholder.com/100.png?text=晶" alt="Chip 2"></div>
-                            <div class="part-slot"><img id="part-conf2-tip" src="https://via.placeholder.com/100.png?text=尖" alt="Tip 2"></div>
-                        </div>
-                    </div>
-
-                    <div class="showcase-row">
-                        <div class="showcase-row-header"><span class="configuration-tag">配置 3</span></div>
-                        <div class="parts-container">
-                            <div class="part-slot"><img id="part-conf3-layer" src="https://via.placeholder.com/100.png?text=層" alt="Layer 3"></div>
-                            <div class="part-slot"><img id="part-conf3-chip" src="https://via.placeholder.com/100.png?text=晶" alt="Chip 3"></div>
-                            <div class="part-slot"><img id="part-conf3-tip" src="https://via.placeholder.com/100.png?text=尖" alt="Tip 3"></div>
-                        </div>
-                    </div>
-
+                    <!-- 動態生成6組展示區塊的容器 -->
                 </div>
             </div>
 
@@ -251,13 +207,46 @@
     </div>
 
     <script>
-        // 即時更新文字
+        // 初始化 6 個配置的 UI
+        function initConfigurations() {
+            const uploadSections = document.getElementById('upload-sections');
+            const showcaseBox = document.getElementById('showcase-box');
+            
+            for (let i = 1; i <= 6; i++) {
+                // 建立上傳區
+                const uploadHtml = `
+                <div class="file-upload-wrapper">
+                    <div style="color:#00e5ff; font-weight:bold; margin-bottom:8px;">配置 ${i}</div>
+                    <label>盔甲層 (Layer):</label>
+                    <input type="file" accept="image/*" onchange="previewImageAutoBg(event, 'part-conf${i}-layer')">
+                    <label>晶片 (Chip):</label>
+                    <input type="file" accept="image/*" onchange="previewImageAutoBg(event, 'part-conf${i}-chip')">
+                    <label>性能尖 (Tip):</label>
+                    <input type="file" accept="image/*" onchange="previewImageAutoBg(event, 'part-conf${i}-tip')">
+                </div>`;
+                uploadSections.insertAdjacentHTML('beforeend', uploadHtml);
+
+                // 建立展示區
+                const showcaseHtml = `
+                <div class="showcase-row">
+                    <div class="showcase-row-header"><span class="configuration-tag">配置 ${i}</span></div>
+                    <div class="parts-container">
+                        <div class="part-slot"><img id="part-conf${i}-layer" src="https://via.placeholder.com/100.png?text=層" alt="Layer ${i}"></div>
+                        <div class="part-slot"><img id="part-conf${i}-chip" src="https://via.placeholder.com/100.png?text=晶" alt="Chip ${i}"></div>
+                        <div class="part-slot"><img id="part-conf${i}-tip" src="https://via.placeholder.com/100.png?text=尖" alt="Tip ${i}"></div>
+                    </div>
+                </div>`;
+                showcaseBox.insertAdjacentHTML('beforeend', showcaseHtml);
+            }
+        }
+        
+        initConfigurations();
+
         function updateText(type) {
             if(type === 'edition') document.getElementById('display-edition').innerText = document.getElementById('input-edition').value;
             if(type === 'name') document.getElementById('display-name').innerText = document.getElementById('input-name').value;
         }
 
-        // 更新名次與顏色
         function updateRank() {
             const rankSelect = document.getElementById('input-rank');
             const nameplate = document.getElementById('nameplate-box');
@@ -273,38 +262,74 @@
             document.getElementById('display-rank').innerText = rankText;
         }
 
-        // 處理圖片上傳並自動去背
-        async function previewImageAutoBg(event, targetId) {
+        // 圖片壓縮功能 (避免 iPad 記憶體不足導致去背失敗)
+        function compressImage(file, maxWidth, maxHeight) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = function (event) {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = function () {
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > height) {
+                            if (width > maxWidth) {
+                                height *= maxWidth / width;
+                                width = maxWidth;
+                            }
+                        } else {
+                            if (height > maxHeight) {
+                                width *= maxHeight / height;
+                                height = maxHeight;
+                            }
+                        }
+
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        canvas.toBlob((blob) => {
+                            resolve(new File([blob], file.name, { type: 'image/jpeg', lastModified: Date.now() }));
+                        }, 'image/jpeg', 0.8); // 壓縮品質 0.8
+                    };
+                };
+            });
+        }
+
+        async function previewImageAutoBg(event, targetId, isPlayer = false) {
             const loadingOverlay = document.getElementById('loading-overlay');
             const output = document.getElementById(targetId);
-            const file = event.target.files[0];
+            let file = event.target.files[0];
 
             if (!file) return;
 
-            // 顯示加載指示器
             loadingOverlay.style.display = 'flex';
             
             try {
-                // 使用更穩定的 imglyRemoveBackground API
+                // 如果是選手大圖，先進行壓縮再送去去背，降低 iPad 崩潰率
+                if (isPlayer && file.size > 1024 * 1024) { 
+                    file = await compressImage(file, 800, 800);
+                }
+
                 const imageBlob = await imglyRemoveBackground(file);
                 const url = URL.createObjectURL(imageBlob);
                 output.src = url;
-                console.log(`去背完成: ${targetId}`);
             } catch (error) {
                 console.error("圖片處理失敗:", error);
-                alert("圖片去背失敗，先幫您放上原圖。");
+                alert("去背運算失敗（可能是照片太複雜或記憶體不足），已為您貼上原圖。");
                 
-                // 失敗時使用原圖
                 const reader = new FileReader();
                 reader.onload = () => output.src = reader.result;
                 reader.readAsDataURL(file);
             } finally {
-                // 隱藏加載指示器
                 loadingOverlay.style.display = 'none';
             }
         }
 
-        // 截圖下載功能 (使用 html2canvas)
         function downloadImage() {
             const poster = document.getElementById('poster');
             const nameSelect = document.getElementById('input-name');
