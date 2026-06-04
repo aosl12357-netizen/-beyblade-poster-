@@ -8,13 +8,10 @@
 
     <style>
         :root {
-            /* 極致華麗帥氣配色 */
-            --bg-base: #030712;
+            /* 基礎配色 */
             --gold-light: #fef08a;
             --gold-main: #eab308;
             --gold-dark: #a16207;
-            --cyan-glow: #06b6d4;
-            --accent-glow: rgba(234, 179, 8, 0.6);
         }
 
         body {
@@ -28,7 +25,7 @@
             user-select: none;
         }
 
-        /* 左側控制面板 */
+        /* 控制面板 */
         .controls {
             flex: 1; background: #111827; padding: 20px; border-radius: 12px;
             display: flex; flex-direction: column; gap: 15px; max-width: 350px;
@@ -36,12 +33,11 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.9);
         }
 
-        .controls h2 { margin-top: 0; font-size: 22px; text-align: center; color: var(--gold-main); text-shadow: 0 0 10px var(--accent-glow); }
+        .controls h2 { margin-top: 0; font-size: 22px; text-align: center; color: var(--gold-main); }
         .controls label { font-weight: bold; font-size: 13px; color: #d1d5db; display: block; margin-bottom: 5px; }
         .controls input[type="text"], .controls select { width: 100%; padding: 10px; background: #1f2937; border: 1px solid #4b5563; color: white; border-radius: 6px; box-sizing: border-box; font-size: 14px; margin-bottom: 10px;}
         
         .file-upload-wrapper { border: 1px solid #374151; border-radius: 8px; padding: 15px; background: #1f2937; margin-bottom: 10px; border-left: 4px solid var(--gold-main);}
-        .file-upload-wrapper.epic-bg { border-left: 4px solid var(--cyan-glow); background: #164e63; border-color: #0891b2; }
         .file-upload-wrapper h4 { margin: 0 0 10px 0; color: #fff; font-size: 16px; border-bottom: 1px solid #4b5563; padding-bottom: 5px;}
         
         .parts-grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -49,7 +45,7 @@
         .parts-grid-inputs label { font-size: 12px; margin-bottom: 4px; color: #9ca3af;}
         .parts-grid-inputs input[type="file"] { width: 100%; font-size: 11px; }
 
-        button { background: linear-gradient(135deg, var(--gold-light), var(--gold-dark)); color: #000; border: none; padding: 15px; font-weight: 900; border-radius: 8px; cursor: pointer; font-size: 18px; margin-top: 10px; box-shadow: 0 5px 15px var(--accent-glow);}
+        button { background: linear-gradient(135deg, var(--gold-light), var(--gold-dark)); color: #000; border: none; padding: 15px; font-weight: 900; border-radius: 8px; cursor: pointer; font-size: 18px; margin-top: 10px; box-shadow: 0 5px 15px rgba(234, 179, 8, 0.4);}
         button:hover { filter: brightness(1.2); transform: translateY(-2px); transition: 0.2s;}
 
         /* 右側海報預覽區 */
@@ -57,101 +53,101 @@
         
         #poster { 
             width: 1000px; height: 1100px; 
-            background-color: var(--bg-base); 
+            background-color: #030712; 
             position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; 
             box-shadow: 0 20px 60px rgba(0,0,0,1); 
             border: 4px solid var(--gold-dark);
             outline: 2px solid var(--gold-light); outline-offset: -8px;
+            transition: background 0.5s ease;
         }
 
-        /* 🌌 核心亮點：超帥中間底圖層 */
+        /* 🌌 內建全自動神級底圖層 */
         .epic-bg-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('https://via.placeholder.com/1000x1100/030712/030712.png'); /* 預設純黑底 */
-            background-size: cover; background-position: center;
-            z-index: 1; opacity: 0.8;
-            /* 電影級底部漸層淡出，讓下面的名牌跟零件依然清晰 */
-            -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 95%);
-            mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 95%);
+            z-index: 1; opacity: 0.9;
+            transition: all 0.5s ease;
+        }
+
+        /* 冠軍：暗金火焰 */
+        .bg-gold-theme {
+            background: radial-gradient(circle at 40% 40%, #4a1c00 0%, #050200 80%),
+                        repeating-linear-gradient(45deg, rgba(234,179,8,0.03) 0px, rgba(234,179,8,0.03) 2px, transparent 2px, transparent 15px);
+        }
+        /* 亞軍：深海幽藍 */
+        .bg-silver-theme {
+            background: radial-gradient(circle at 40% 40%, #001f3f 0%, #00050a 80%),
+                        repeating-linear-gradient(45deg, rgba(0,229,255,0.03) 0px, rgba(0,229,255,0.03) 2px, transparent 2px, transparent 15px);
+        }
+        /* 季軍：熔岩赤銅 */
+        .bg-bronze-theme {
+            background: radial-gradient(circle at 40% 40%, #3a1500 0%, #0a0300 80%),
+                        repeating-linear-gradient(45deg, rgba(205,127,50,0.03) 0px, rgba(205,127,50,0.03) 2px, transparent 2px, transparent 15px);
         }
 
         /* 輔助特效層：增加整體華麗感 */
         .poster-fx-rays {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: repeating-conic-gradient(from 0deg at 50% 50%, rgba(255,255,255,0.03) 0deg, transparent 10deg, rgba(255,255,255,0.03) 20deg);
-            z-index: 2; pointer-events: none; mix-blend-mode: screen; opacity: 0.6;
+            background: repeating-conic-gradient(from 0deg at 50% 50%, rgba(255,255,255,0.02) 0deg, transparent 10deg, rgba(255,255,255,0.02) 20deg);
+            z-index: 2; pointer-events: none; mix-blend-mode: screen; opacity: 0.8;
         }
 
         /* 標題 */
         .header-title { z-index: 3; text-align: center; margin-top: 45px; text-shadow: 0 10px 20px rgba(0,0,0,1); }
-        .header-title h1 { 
-            font-size: 42px; margin: 0; letter-spacing: 6px; font-weight: 900; 
-            color: #fff; text-shadow: 0 0 20px rgba(255,255,255,0.6);
-        }
+        .header-title h1 { font-size: 42px; margin: 0; letter-spacing: 6px; font-weight: 900; color: #fff; text-shadow: 0 0 20px rgba(255,255,255,0.6);}
         .header-title h2 { 
             font-size: 60px; margin: 0px 0 0 0; letter-spacing: 12px; font-weight: 900; 
             background: linear-gradient(to bottom, var(--gold-light), var(--gold-main), var(--gold-dark)); 
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.8));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.8));
         }
 
         .content { display: flex; width: 94%; margin-top: 10px; z-index: 4; flex: 1; gap: 40px; }
         
-        /* 人物影像 - 加上「發光氣場」掩護去背瑕疵 */
+        /* 人物影像 - 自帶發光氣場掩護 */
         .player-img-wrapper { flex: 1; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 200px; position: relative; }
         .player-img-wrapper img { 
             max-width: 140%; max-height: 850px; object-fit: contain; z-index: 5;
-            /* 雙重陰影：第一層金色發光掩護毛邊，第二層黑色陰影增加立體感 */
-            filter: drop-shadow(0 0 15px rgba(234, 179, 8, 0.4)) drop-shadow(0 20px 40px rgba(0,0,0,0.9)); 
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.2)) drop-shadow(0 20px 40px rgba(0,0,0,0.9)); 
         }
 
         /* 科技競技展示櫃 */
         .showcase { 
-            flex: 1.2; background: rgba(3, 7, 18, 0.85); border: 2px solid var(--gold-main); 
-            border-radius: 16px; box-shadow: 0 20px 50px rgba(0,0,0,1), inset 0 0 40px rgba(234, 179, 8, 0.15); 
+            flex: 1.2; background: rgba(3, 7, 18, 0.7); border: 2px solid var(--gold-main); 
+            border-radius: 16px; box-shadow: 0 20px 50px rgba(0,0,0,1), inset 0 0 40px rgba(234, 179, 8, 0.1); 
             display: flex; flex-direction: column; padding: 25px; gap: 18px; margin-bottom: 180px; 
             position: relative; backdrop-filter: blur(10px);
         }
-        /* 展示櫃四角高科技裝飾 */
-        .showcase::before, .showcase::after {
-            content: ''; position: absolute; width: 25px; height: 25px; border: 3px solid var(--gold-light);
-        }
-        .showcase::before { top: -2px; left: -2px; border-right: none; border-bottom: none; }
-        .showcase::after { bottom: -2px; right: -2px; border-left: none; border-top: none; }
 
         .showcase-row { 
             display: flex; flex-direction: column; border-radius: 8px; 
-            background: linear-gradient(90deg, rgba(234, 179, 8, 0.1) 0%, transparent 100%);
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0%, transparent 100%);
             border-left: 5px solid var(--gold-main); padding: 15px; 
         }
         
         .showcase-row-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(234, 179, 8, 0.3); padding-bottom: 8px; margin-bottom: 15px; }
         .configuration-tag { font-size: 20px; font-weight: 900; color: var(--gold-light); letter-spacing: 3px; text-shadow: 0 2px 5px #000; }
         
-        /* 零件 - 華麗無框排列 */
         .parts-container { display: flex; justify-content: space-around; align-items: center; width: 100%; gap: 10px;}
         .part-slot { width: 85px; height: 85px; display: flex; justify-content: center; align-items: center; position: relative; }
         .part-slot img { max-height: 100%; max-width: 100%; object-fit: contain; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.9)); z-index: 2; }
 
-        /* 霸氣皇家名牌 */
+        /* 🛡️ 排版防擋修正 1：名牌靠右 */
         .nameplate {
-            position: absolute; bottom: 40px; width: 600px; height: 160px; border-radius: 12px; z-index: 10;
+            position: absolute; right: 20px; bottom: 35px; width: 550px; height: 160px; border-radius: 12px; z-index: 10;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             background: linear-gradient(180deg, #fef08a 0%, #eab308 50%, #a16207 100%);
             color: #000; box-shadow: 0 25px 50px rgba(0,0,0,1), inset 0 0 15px rgba(255,255,255,0.6);
-            border: 4px solid #fff2a8;
+            border: 4px solid #fff2a8; transition: all 0.5s ease;
         }
-
         .nameplate-title { font-size: 20px; font-weight: 900; margin-bottom: 5px; letter-spacing: 4px; color: #332200;}
         .nameplate-rank { font-size: 55px; font-weight: 900; letter-spacing: 15px; line-height: 1; color: #000; text-shadow: 2px 3px 0px rgba(255,255,255,0.6);}
         .nameplate-name { font-size: 28px; font-weight: 900; margin-top: 8px; letter-spacing: 6px; color: #111;}
 
-        /* 左下角專屬插槽 */
+        /* 🛡️ 排版防擋修正 2：專屬插槽靠左，並且圖層置頂 */
         .custom-bottom-left-slot {
-            position: absolute; left: 40px; bottom: 40px; z-index: 9;
-            width: 250px; height: 250px; display: flex; justify-content: center; align-items: center;
+            position: absolute; left: 20px; bottom: 20px; z-index: 50; /* 確保在名牌之上 */
+            width: 320px; height: 320px; display: flex; justify-content: center; align-items: center;
         }
-        .custom-bottom-left-slot img { max-width: 100%; max-height: 100%; object-fit: contain; z-index: 2; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.9)); }
+        .custom-bottom-left-slot img { max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.9)); }
     </style>
 </head>
 <body>
@@ -171,20 +167,15 @@
 
         <label>選手姓名: <input type="text" id="input-name" value="郭嘉弘" oninput="updateText('name')"></label>
 
-        <div class="file-upload-wrapper epic-bg">
-            <h4>🌌 中間帥氣底圖</h4>
-            <label style="color: #67e8f9; font-size: 12px;">※ 上傳神龍、競技場、星空等超帥圖片，自動墊在背後</label>
-            <input type="file" accept="image/*" onchange="previewEpicBg(event)">
-        </div>
-
         <div class="file-upload-wrapper">
             <h4>👤 選手去背照片</h4>
-            <label style="color: #fef08a; font-size: 12px;">※ 已自動加上「發光氣場」，邊緣去不乾淨也看不出來！</label>
+            <label style="color: #fef08a; font-size: 12px;">※ 已自動加上「發光氣場」，完美融合背景</label>
             <input type="file" accept="image/*" onchange="previewImage(event, 'player-img')">
         </div>
 
         <div class="file-upload-wrapper">
-            <h4>✨ 左下角專屬圖片</h4>
+            <h4>✨ 左下角專屬 LOGO</h4>
+            <label style="color: #00e5ff; font-size: 12px;">※ 版面已錯開，保證不會再被名牌擋住了！</label>
             <input type="file" accept="image/*" onchange="previewImage(event, 'custom-bottom-left-img')">
         </div>
 
@@ -195,7 +186,7 @@
 
     <div class="poster-container">
         <div id="poster">
-            <div class="epic-bg-layer" id="epic-bg-layer"></div>
+            <div class="epic-bg-layer bg-gold-theme" id="epic-bg-layer"></div>
             <div class="poster-fx-rays"></div>
             
             <div class="header-title">
@@ -270,35 +261,33 @@
         function updateRank() {
             const rankSelect = document.getElementById('input-rank');
             const nameplate = document.getElementById('nameplate-box');
+            const epicBgLayer = document.getElementById('epic-bg-layer');
+            const showcaseBox = document.getElementById('showcase-box');
             
             let rawText = rankSelect.options[rankSelect.selectedIndex].text;
             let rankText = rawText.substring(3).trim(); 
             document.getElementById('display-rank').innerText = rankText;
 
+            // 移除舊背景主題
+            epicBgLayer.classList.remove('bg-gold-theme', 'bg-silver-theme', 'bg-bronze-theme');
+
+            // 根據名次切換：名牌顏色、展示櫃框色、背景特效
             if (rankSelect.value === 'gold') {
+                epicBgLayer.classList.add('bg-gold-theme');
                 nameplate.style.background = 'linear-gradient(180deg, #fef08a 0%, #eab308 50%, #a16207 100%)';
-                nameplate.style.color = '#000';
+                nameplate.style.borderColor = '#fff2a8';
+                showcaseBox.style.borderColor = '#eab308';
             } else if (rankSelect.value === 'silver') {
-                nameplate.style.background = 'linear-gradient(180deg, #ffffff 0%, #a8a8a8 50%, #707070 100%)';
-                nameplate.style.color = '#000';
+                epicBgLayer.classList.add('bg-silver-theme');
+                nameplate.style.background = 'linear-gradient(180deg, #ffffff 0%, #a8a8a8 50%, #444444 100%)';
+                nameplate.style.borderColor = '#ffffff';
+                showcaseBox.style.borderColor = '#a8a8a8';
             } else {
+                epicBgLayer.classList.add('bg-bronze-theme');
                 nameplate.style.background = 'linear-gradient(180deg, #ffb380 0%, #cd7f32 50%, #8b4513 100%)';
-                nameplate.style.color = '#fff';
+                nameplate.style.borderColor = '#ffeedd';
+                showcaseBox.style.borderColor = '#cd7f32';
             }
-        }
-
-        // 處理中間帥氣底圖的讀取
-        function previewEpicBg(event) {
-            const epicBgLayer = document.getElementById('epic-bg-layer');
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function() {
-                // 將讀取到的圖片設為背景
-                epicBgLayer.style.backgroundImage = 'url(' + reader.result + ')';
-            }
-            reader.readAsDataURL(file);
         }
 
         // 一般透明圖片讀取
