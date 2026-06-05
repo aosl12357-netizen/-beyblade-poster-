@@ -58,8 +58,6 @@
 
         /* 👑 右側預覽畫布 */
         .preview-container { flex: 3; display: flex; justify-content: center; align-items: flex-start; overflow-y: auto; padding-bottom: 50px;}
-        
-        /* 🔧 修正 1：加寬拉高海報，裝下所有巨大化的零件 */
         #export-canvas { display: flex; gap: 20px; background-color: #000; padding: 20px; transition: all 0.5s ease; width: 1100px; height: 1350px;}
 
         /* 🎨 面板共用華麗背景 */
@@ -70,7 +68,7 @@
             outline: 1px solid var(--theme-border); outline-offset: -8px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.9);
             overflow: hidden; transition: all 0.5s ease;
-            height: 100%; /* 確保面板自動伸展填滿 */
+            height: 100%;
         }
 
         .ornate-panel::before {
@@ -80,7 +78,7 @@
             opacity: 0.8; z-index: 0; pointer-events: none; transition: background 0.5s ease;
         }
 
-        /* 🔧 修正 2：100% 截圖相容的齒輪 SVG，不再變方塊 */
+        /* 相容度 100% SVG 齒輪 */
         .epic-gears { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; z-index: 1; pointer-events: none; }
         .gear {
             position: absolute;
@@ -98,7 +96,7 @@
             opacity: 0.6; z-index: 1; pointer-events: none;
         }
 
-        /* 🔧 修正 3：相容性 100% 的發光金屬文字 (捨棄會變方塊的漸層) */
+        /* 發光金屬文字 */
         .glow-text {
             color: var(--text-color-main);
             text-shadow: 0 3px 6px rgba(0,0,0,0.9), 0 0 15px var(--text-shadow-glow);
@@ -115,13 +113,13 @@
             border-bottom: 2px solid var(--theme-border); padding-bottom: 10px; width: 80%; text-align: center; 
         }
 
-        /* 🛡️ 人像區域限制，不超出畫面 */
+        /* 🛠️ 修正 1：人物往上提，消除上方大塊空白，改為置中排版 */
         .player-img-container { 
-            position: absolute; top: 80px; bottom: 0; left: 0; width: 100%; 
-            display: flex; justify-content: center; align-items: flex-end; z-index: 2; 
+            position: absolute; top: 70px; bottom: 350px; left: 0; width: 100%; 
+            display: flex; justify-content: center; align-items: center; z-index: 2; 
         }
         .player-img-container img { 
-            max-width: 150%; max-height: 800px; object-fit: contain; object-position: bottom center;
+            max-width: 150%; max-height: 100%; object-fit: contain; object-position: center;
             filter: drop-shadow(0 15px 25px rgba(0,0,0,1));
         }
 
@@ -145,10 +143,19 @@
         .logo-slot img { max-width: 90%; max-height: 90%; object-fit: contain; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.8)); }
 
         /* ⚙️ 右半部：零件配置陳列區 */
-        .parts-section { width: 560px; padding: 30px 20px 50px 20px; box-sizing: border-box; } /* 加寬零件區 */
-        .parts-title { font-size: 32px; letter-spacing: 4px; margin-bottom: 25px; }
+        .parts-section { width: 560px; padding: 30px 20px 50px 20px; box-sizing: border-box; display: flex; flex-direction: column;} 
+        .parts-title { font-size: 32px; letter-spacing: 4px; margin-bottom: 15px; text-align: center;}
 
-        .config-block { width: 100%; margin-bottom: 30px; display: flex; flex-direction: column; align-items: center; }
+        /* 🛠️ 修正 2：利用 Flexbox 讓三個配置區塊均勻分散填滿高度 */
+        #showcase-box {
+            flex: 1; /* 佔滿剩餘高度 */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly; /* 神奇語法：均勻分配上下空間！ */
+            width: 100%;
+        }
+
+        .config-block { width: 100%; display: flex; flex-direction: column; align-items: center; } /* 拿掉原來的 margin-bottom */
         .config-header { font-size: 20px; margin-bottom: 15px; letter-spacing: 3px; position: relative; }
         .config-header::before, .config-header::after { content: ''; position: absolute; top: 50%; width: 70px; height: 1px; background: var(--theme-border); }
         .config-header::before { right: 100%; margin-right: 15px; }
@@ -248,7 +255,7 @@
 
                 <div class="content-wrapper" style="width: 100%;">
                     <div class="parts-title glow-text">陀螺配置陳列</div>
-                    <div id="showcase-box" style="width: 100%;">
+                    <div id="showcase-box">
                         </div>
                 </div>
             </div>
