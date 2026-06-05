@@ -75,7 +75,6 @@
             overflow: hidden; transition: all 0.5s ease;
         }
 
-        /* 星空與漸層底色 */
         .ornate-panel::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(circle at 50% 40%, var(--theme-glow) 0%, transparent 80%),
@@ -89,15 +88,11 @@
             overflow: hidden; z-index: 1; pointer-events: none;
         }
         .gear {
-            position: absolute;
-            background-color: var(--theme-border);
-            /* 使用超清 SVG 齒輪作為遮罩，完美呈現金屬質感 */
+            position: absolute; background-color: var(--theme-border);
             -webkit-mask-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50,15 c-1.5,0-3,1-3,2.5 v5 c-3.5,0.7-6.8,2-9.7,3.8 l-3.5-3.5 c-1.1-1.1-2.9-1.1-4,0 l-4.2,4.2 c-1.1,1.1-1.1,2.9,0,4 l3.5,3.5 c-1.8,2.9-3.1,6.2-3.8,9.7 h-5 c-1.5,0-2.5,1.5-2.5,3 v6 c0,1.5,1,2.5,2.5,2.5 h5 c0.7,3.5,2,6.8,3.8,9.7 l-3.5,3.5 c-1.1,1.1-1.1,2.9,0,4 l4.2,4.2 c1.1,1.1,2.9,1.1,4,0 l3.5-3.5 c2.9,1.8,6.2,3.1,9.7,3.8 v5 c0,1.5,1.5,2.5,3,2.5 h6 c1.5,0,3-1,3-2.5 v-5 c3.5-0.7,6.8-2,9.7-3.8 l3.5,3.5 c1.1,1.1,2.9,1.1,4,0 l4.2-4.2 c1.1-1.1,1.1-2.9,0-4 l-3.5-3.5 c1.8-2.9,3.1-6.2,3.8-9.7 h5 c1.5,0,2.5-1.5,2.5-3 v-6 c0-1.5-1-2.5-2.5-2.5 h-5 c-0.7-3.5-2-6.8-3.8-9.7 l3.5-3.5 c1.1-1.1,1.1-2.9,0-4 l-4.2-4.2 c-1.1-1.1-2.9-1.1-4,0 l-3.5,3.5 c-2.9-1.8-6.2-3.1-9.7-3.8 v-5 c0-1.5-1.5-2.5-3-2.5 H50 z M50,35 A15,15 0 1,1 50,65 A15,15 0 1,1 50,35 z'/%3E%3C/svg%3E");
             mask-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50,15 c-1.5,0-3,1-3,2.5 v5 c-3.5,0.7-6.8,2-9.7,3.8 l-3.5-3.5 c-1.1-1.1-2.9-1.1-4,0 l-4.2,4.2 c-1.1,1.1-1.1,2.9,0,4 l3.5,3.5 c-1.8,2.9-3.1,6.2-3.8,9.7 h-5 c-1.5,0-2.5,1.5-2.5,3 v6 c0,1.5,1,2.5,2.5,2.5 h5 c0.7,3.5,2,6.8,3.8,9.7 l-3.5,3.5 c-1.1,1.1-1.1,2.9,0,4 l4.2,4.2 c1.1,1.1,2.9,1.1,4,0 l3.5-3.5 c2.9,1.8,6.2,3.1,9.7,3.8 v5 c0,1.5,1.5,2.5,3,2.5 h6 c1.5,0,3-1,3-2.5 v-5 c3.5-0.7,6.8-2,9.7-3.8 l3.5,3.5 c1.1,1.1,2.9,1.1,4,0 l4.2-4.2 c1.1-1.1,1.1-2.9,0-4 l-3.5-3.5 c1.8-2.9,3.1-6.2,3.8-9.7 h5 c1.5,0,2.5-1.5,2.5-3 v-6 c0-1.5-1-2.5-2.5-2.5 h-5 c-0.7-3.5-2-6.8-3.8-9.7 l3.5-3.5 c1.1-1.1,1.1-2.9,0-4 l-4.2-4.2 c-1.1-1.1-2.9-1.1-4,0 l-3.5,3.5 c-2.9-1.8-6.2-3.1-9.7-3.8 v-5 c0-1.5-1.5-2.5-3-2.5 H50 z M50,35 A15,15 0 1,1 50,65 A15,15 0 1,1 50,35 z'/%3E%3C/svg%3E");
-            -webkit-mask-size: contain; mask-size: contain;
-            -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
-            opacity: 0.15;
-            filter: drop-shadow(0 0 10px var(--theme-border));
+            -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+            opacity: 0.15; filter: drop-shadow(0 0 10px var(--theme-border));
         }
         .gear-1 { width: 550px; height: 550px; top: 10%; right: -200px; transform: rotate(15deg); }
         .gear-2 { width: 350px; height: 350px; top: 55%; left: -120px; transform: rotate(45deg); opacity: 0.1;}
@@ -106,52 +101,66 @@
         /* 🌐 底部科技透視網格 */
         .cyber-grid {
             position: absolute; bottom: 0; left: 0; width: 100%; height: 22%;
-            background-image: 
-                linear-gradient(var(--theme-grid) 1px, transparent 1px),
-                linear-gradient(90deg, var(--theme-grid) 1px, transparent 1px);
-            background-size: 40px 40px;
-            transform: perspective(400px) rotateX(70deg);
-            transform-origin: bottom;
+            background-image: linear-gradient(var(--theme-grid) 1px, transparent 1px), linear-gradient(90deg, var(--theme-grid) 1px, transparent 1px);
+            background-size: 40px 40px; transform: perspective(400px) rotateX(70deg); transform-origin: bottom;
             opacity: 0.6; z-index: 1; pointer-events: none;
         }
 
-        .ornate-panel > .content-wrapper { position: relative; z-index: 5; height: 100%; display: flex; flex-direction: column; align-items: center;}
-
-        /* 漸層文字共用設定 */
+        /* 漸層文字設定 */
         .gradient-text { display: inline-block; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
         /* 🖼️ 左半部：人物海報區 */
         .poster-section { width: 500px; height: 850px; padding: 30px 20px; box-sizing: border-box; }
+        .content-wrapper { position: relative; z-index: 5; height: 100%; width: 100%; display: flex; flex-direction: column; align-items: center;}
         
         .top-name { 
+            position: relative; z-index: 10;
             font-size: 32px; font-weight: 900; letter-spacing: 5px; 
-            border-bottom: 2px solid var(--theme-border); padding-bottom: 10px; margin-bottom: 15px; width: 80%; text-align: center; 
+            border-bottom: 2px solid var(--theme-border); padding-bottom: 10px; width: 80%; text-align: center; 
             background: var(--gold-gradient); filter: drop-shadow(0 2px 5px rgba(212, 175, 55, 0.4));
         }
 
-        .player-img-container { flex: 1; width: 100%; display: flex; justify-content: center; align-items: flex-end; position: relative; }
-        .player-img-container img { max-width: 145%; max-height: 550px; object-fit: contain; filter: drop-shadow(0 15px 25px rgba(0,0,0,1)); z-index: 10;}
-
-        .rank-title-box { text-align: center; margin-top: 15px; margin-bottom: 15px; }
-        .rank-title-box h3 { font-size: 20px; color: #ddd; margin: 0 0 5px 0; letter-spacing: 3px; font-weight: bold; }
-        .rank-title-box h1 { 
-            font-size: 58px; margin: 0; letter-spacing: 15px; 
-            background: var(--gold-gradient); filter: drop-shadow(0 4px 10px rgba(0,0,0,0.8));
+        /* 🛡️ 立體排版修正：人像絕對置底，不受文字擠壓 */
+        .player-img-container { 
+            position: absolute; top: 60px; bottom: 0; left: 0; width: 100%; 
+            display: flex; justify-content: center; align-items: flex-end; z-index: 2; 
+        }
+        .player-img-container img { 
+            max-width: 150%; max-height: 100%; object-fit: contain; object-position: bottom center;
+            filter: drop-shadow(0 15px 25px rgba(0,0,0,1));
         }
 
-        .logo-slot { width: 100%; height: 100px; display: flex; justify-content: center; align-items: center; margin-bottom: 25px; z-index: 10;}
-        .logo-slot img { max-width: 90%; max-height: 90%; object-fit: contain; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5)); }
+        /* 🖤 底部黑色漸層：掩護人像，凸顯文字 */
+        .bottom-gradient-overlay {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 350px;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
+            z-index: 3; pointer-events: none;
+        }
+
+        /* 🛡️ 立體排版修正：文字和 LOGO 絕對鎖死在底部 */
+        .bottom-info-box {
+            position: absolute; bottom: 10px; left: 0; width: 100%;
+            display: flex; flex-direction: column; align-items: center; z-index: 10;
+        }
+
+        .rank-title-box { text-align: center; margin-bottom: 15px; }
+        .rank-title-box h3 { font-size: 20px; color: #ddd; margin: 0 0 5px 0; letter-spacing: 3px; font-weight: bold; text-shadow: 0 2px 5px #000; }
+        .rank-title-box h1 { 
+            font-size: 58px; margin: 0; letter-spacing: 15px; 
+            background: var(--gold-gradient); filter: drop-shadow(0 4px 10px rgba(0,0,0,1));
+        }
+
+        .logo-slot { width: 100%; height: 110px; display: flex; justify-content: center; align-items: center; margin-bottom: 10px; z-index: 10;}
+        .logo-slot img { max-width: 90%; max-height: 90%; object-fit: contain; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.8)); }
 
         /* ⚙️ 右半部：零件配置陳列區 */
         .parts-section { width: 420px; height: 850px; padding: 30px 20px; box-sizing: border-box; }
-        
         .parts-title { 
             font-size: 28px; font-weight: 900; letter-spacing: 4px; margin-bottom: 25px; 
             background: var(--gold-gradient); filter: drop-shadow(0 2px 8px rgba(0,0,0,0.8)); 
         }
 
         .config-block { width: 100%; margin-bottom: 30px; display: flex; flex-direction: column; align-items: center; }
-        
         .config-header { 
             font-size: 18px; font-weight: bold; margin-bottom: 15px; letter-spacing: 3px; position: relative; 
             background: var(--gold-gradient);
@@ -166,7 +175,6 @@
         .part-item img { width: 100%; height: 80px; object-fit: contain; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.8)); transition: all 0.3s ease; }
         .part-name-text { font-size: 13px; font-weight: bold; color: #fff; text-align: center; width: 100%; word-break: break-all; text-shadow: 0 2px 4px #000; }
 
-        /* 智能放大模式 (1~3 個零件) */
         .parts-grid-display.large-mode { gap: 25px; }
         .parts-grid-display.large-mode .part-item { width: 115px; }
         .parts-grid-display.large-mode .part-item img { height: 115px; filter: drop-shadow(0 8px 15px rgba(0,0,0,0.9)); }
@@ -192,7 +200,6 @@
 
     <div class="controls">
         <h2>榮耀海報生成控制</h2>
-        
         <label>選手姓名:</label>
         <input type="text" id="input-name" value="郭嘉弘" oninput="updateText('name')">
         
@@ -227,15 +234,21 @@
                 
                 <div class="content-wrapper">
                     <div class="top-name gradient-text" id="display-name-top">郭嘉弘</div>
+                    
                     <div class="player-img-container">
                         <img id="player-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="選手">
                     </div>
-                    <div class="rank-title-box">
-                        <h3>門陣仔 大會勝者</h3>
-                        <h1 class="gradient-text" id="display-rank">冠軍</h1>
-                    </div>
-                    <div class="logo-slot">
-                        <img id="custom-logo-img" src="" alt="" style="display: none;">
+
+                    <div class="bottom-gradient-overlay"></div>
+
+                    <div class="bottom-info-box">
+                        <div class="rank-title-box">
+                            <h3>門陣仔 大會勝者</h3>
+                            <h1 class="gradient-text" id="display-rank">冠軍</h1>
+                        </div>
+                        <div class="logo-slot">
+                            <img id="custom-logo-img" src="" alt="" style="display: none;">
+                        </div>
                     </div>
                 </div>
             </div>
