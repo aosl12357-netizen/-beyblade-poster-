@@ -11,18 +11,13 @@
         :root {
             --bg-dark: #12141a;
             --panel-bg: #0a0c12; 
-            --gold-light: #fef08a;
-            --gold-main: #d4af37;
-            --gold-dark: #997a00;
-            --text-gold: #fde047;
-            
-            --theme-glow: rgba(212, 175, 55, 0.25);
             --theme-border: #d4af37;
+            --theme-glow: rgba(212, 175, 55, 0.25);
             --theme-grid: rgba(0, 229, 255, 0.4);
-
-            --gold-gradient: linear-gradient(180deg, #fff2a8 0%, #ffd700 50%, #b8860b 100%);
-            --silver-gradient: linear-gradient(180deg, #ffffff 0%, #a8a8a8 50%, #707070 100%);
-            --bronze-gradient: linear-gradient(180deg, #ffb380 0%, #cd7f32 50%, #8b4513 100%);
+            
+            /* ✨ 100% 截圖相容的高光金屬色 */
+            --text-color-main: #ffe066;
+            --text-shadow-glow: rgba(212, 175, 55, 0.8);
         }
 
         body {
@@ -50,7 +45,7 @@
         .controls input[type="text"], .controls select { width: 100%; padding: 10px; background: #222; border: 1px solid #555; color: white; border-radius: 4px; box-sizing: border-box; font-size: 14px; margin-bottom: 10px;}
         
         .file-upload-wrapper { border: 1px solid #444; border-radius: 6px; padding: 15px; background: #1a1a1a; margin-bottom: 10px; }
-        .file-upload-wrapper h4 { margin: 0 0 10px 0; color: var(--gold-light); font-size: 16px; border-bottom: 1px dashed #555; padding-bottom: 5px;}
+        .file-upload-wrapper h4 { margin: 0 0 10px 0; color: #fff2a8; font-size: 16px; border-bottom: 1px dashed #555; padding-bottom: 5px;}
         
         .parts-grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .parts-grid-inputs div { background: #111; padding: 10px; border-radius: 6px; border: 1px solid #333; display: flex; flex-direction: column; gap: 6px;}
@@ -58,12 +53,14 @@
         .parts-grid-inputs input[type="file"] { width: 100%; font-size: 11px; }
         .parts-grid-inputs input[type="text"] { width: 100%; font-size: 12px; padding: 6px; background: #000; border: 1px solid #555; margin:0; border-radius: 3px; color: #fff;}
 
-        button { background: linear-gradient(to bottom, var(--gold-light), var(--theme-border)); color: #000; border: none; padding: 15px; font-weight: 900; border-radius: 4px; cursor: pointer; font-size: 18px; margin-top: 10px; transition: 0.2s;}
+        button { background: linear-gradient(to bottom, #fff2a8, var(--theme-border)); color: #000; border: none; padding: 15px; font-weight: 900; border-radius: 4px; cursor: pointer; font-size: 18px; margin-top: 10px; transition: 0.2s;}
         button:hover { filter: brightness(1.2); }
 
         /* 👑 右側預覽畫布 */
-        .preview-container { flex: 3; display: flex; justify-content: center; align-items: flex-start; overflow-y: auto; }
-        #export-canvas { display: flex; gap: 20px; background-color: #000; padding: 20px; transition: all 0.5s ease;}
+        .preview-container { flex: 3; display: flex; justify-content: center; align-items: flex-start; overflow-y: auto; padding-bottom: 50px;}
+        
+        /* 🔧 修正 1：加寬拉高海報，裝下所有巨大化的零件 */
+        #export-canvas { display: flex; gap: 20px; background-color: #000; padding: 20px; transition: all 0.5s ease; width: 1100px; height: 1350px;}
 
         /* 🎨 面板共用華麗背景 */
         .ornate-panel {
@@ -73,6 +70,7 @@
             outline: 1px solid var(--theme-border); outline-offset: -8px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.9);
             overflow: hidden; transition: all 0.5s ease;
+            height: 100%; /* 確保面板自動伸展填滿 */
         }
 
         .ornate-panel::before {
@@ -82,21 +80,15 @@
             opacity: 0.8; z-index: 0; pointer-events: none; transition: background 0.5s ease;
         }
 
-        /* ⚙️ 核心特效：帥帥齒輪 */
-        .epic-gears {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            overflow: hidden; z-index: 1; pointer-events: none;
-        }
+        /* 🔧 修正 2：100% 截圖相容的齒輪 SVG，不再變方塊 */
+        .epic-gears { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; z-index: 1; pointer-events: none; }
         .gear {
-            position: absolute; background-color: var(--theme-border);
-            -webkit-mask-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50,15 c-1.5,0-3,1-3,2.5 v5 c-3.5,0.7-6.8,2-9.7,3.8 l-3.5-3.5 c-1.1-1.1-2.9-1.1-4,0 l-4.2,4.2 c-1.1,1.1-1.1,2.9,0,4 l3.5,3.5 c-1.8,2.9-3.1,6.2-3.8,9.7 h-5 c-1.5,0-2.5,1.5-2.5,3 v6 c0,1.5,1,2.5,2.5,2.5 h5 c0.7,3.5,2,6.8,3.8,9.7 l-3.5,3.5 c-1.1,1.1-1.1,2.9,0,4 l4.2,4.2 c1.1,1.1,2.9,1.1,4,0 l3.5-3.5 c2.9,1.8,6.2,3.1,9.7,3.8 v5 c0,1.5,1.5,2.5,3,2.5 h6 c1.5,0,3-1,3-2.5 v-5 c3.5-0.7,6.8-2,9.7-3.8 l3.5,3.5 c1.1,1.1,2.9,1.1,4,0 l4.2-4.2 c1.1-1.1,1.1-2.9,0-4 l-3.5-3.5 c1.8-2.9,3.1-6.2,3.8-9.7 h5 c1.5,0,2.5-1.5,2.5-3 v-6 c0-1.5-1-2.5-2.5-2.5 h-5 c-0.7-3.5-2-6.8-3.8-9.7 l3.5-3.5 c1.1-1.1,1.1-2.9,0-4 l-4.2-4.2 c-1.1-1.1-2.9-1.1-4,0 l-3.5,3.5 c-2.9-1.8-6.2-3.1-9.7-3.8 v-5 c0-1.5-1.5-2.5-3-2.5 H50 z M50,35 A15,15 0 1,1 50,65 A15,15 0 1,1 50,35 z'/%3E%3C/svg%3E");
-            mask-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50,15 c-1.5,0-3,1-3,2.5 v5 c-3.5,0.7-6.8,2-9.7,3.8 l-3.5-3.5 c-1.1-1.1-2.9-1.1-4,0 l-4.2,4.2 c-1.1,1.1-1.1,2.9,0,4 l3.5,3.5 c-1.8,2.9-3.1,6.2-3.8,9.7 h-5 c-1.5,0-2.5,1.5-2.5,3 v6 c0,1.5,1,2.5,2.5,2.5 h5 c0.7,3.5,2,6.8,3.8,9.7 l-3.5,3.5 c-1.1,1.1-1.1,2.9,0,4 l4.2,4.2 c1.1,1.1,2.9,1.1,4,0 l3.5-3.5 c2.9,1.8,6.2,3.1,9.7,3.8 v5 c0,1.5,1.5,2.5,3,2.5 h6 c1.5,0,3-1,3-2.5 v-5 c3.5-0.7,6.8-2,9.7-3.8 l3.5,3.5 c1.1,1.1,2.9,1.1,4,0 l4.2-4.2 c1.1-1.1,1.1-2.9,0-4 l-3.5-3.5 c1.8-2.9,3.1-6.2,3.8-9.7 h5 c1.5,0,2.5-1.5,2.5-3 v-6 c0-1.5-1-2.5-2.5-2.5 h-5 c-0.7-3.5-2-6.8-3.8-9.7 l3.5-3.5 c1.1-1.1,1.1-2.9,0-4 l-4.2-4.2 c-1.1-1.1-2.9-1.1-4,0 l-3.5,3.5 c-2.9-1.8-6.2-3.1-9.7-3.8 v-5 c0-1.5-1.5-2.5-3-2.5 H50 z M50,35 A15,15 0 1,1 50,65 A15,15 0 1,1 50,35 z'/%3E%3C/svg%3E");
-            -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
-            opacity: 0.15; filter: drop-shadow(0 0 10px var(--theme-border));
+            position: absolute;
+            background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='%23ffffff'%3E%3Cpath d='M50,15 c-1.5,0-3,1-3,2.5 v5 c-3.5,0.7-6.8,2-9.7,3.8 l-3.5-3.5 c-1.1-1.1-2.9-1.1-4,0 l-4.2,4.2 c-1.1,1.1-1.1,2.9,0,4 l3.5,3.5 c-1.8,2.9-3.1,6.2-3.8,9.7 h-5 c-1.5,0-2.5,1.5-2.5,3 v6 c0,1.5,1,2.5,2.5,2.5 h5 c0.7,3.5,2,6.8,3.8,9.7 l-3.5,3.5 c-1.1,1.1-1.1,2.9,0,4 l4.2,4.2 c1.1,1.1,2.9,1.1,4,0 l3.5-3.5 c2.9,1.8,6.2,3.1,9.7,3.8 v5 c0,1.5,1.5,2.5,3,2.5 h6 c1.5,0,3-1,3-2.5 v-5 c3.5-0.7,6.8-2,9.7-3.8 l3.5,3.5 c1.1,1.1,2.9,1.1,4,0 l4.2-4.2 c1.1-1.1,1.1-2.9,0-4 l-3.5-3.5 c1.8-2.9,3.1-6.2,3.8-9.7 h5 c1.5,0,2.5-1.5,2.5-3 v-6 c0-1.5-1-2.5-2.5-2.5 h-5 c-0.7-3.5-2-6.8-3.8-9.7 l3.5-3.5 c1.1-1.1,1.1-2.9,0-4 l-4.2-4.2 c-1.1-1.1-2.9-1.1-4,0 l-3.5,3.5 c-2.9-1.8-6.2-3.1-9.7-3.8 v-5 c0-1.5-1.5-2.5-3-2.5 H50 z M50,35 A15,15 0 1,1 50,65 A15,15 0 1,1 50,35 z'/%3E%3C/svg%3E");
+            background-size: contain; background-repeat: no-repeat; opacity: 0.08;
         }
-        .gear-1 { width: 550px; height: 550px; top: 10%; right: -200px; transform: rotate(15deg); }
-        .gear-2 { width: 350px; height: 350px; top: 55%; left: -120px; transform: rotate(45deg); opacity: 0.1;}
-        .gear-3 { width: 250px; height: 250px; top: 5%; left: 30px; transform: rotate(70deg); opacity: 0.08;}
+        .gear-1 { width: 650px; height: 650px; top: 10%; right: -250px; transform: rotate(15deg); }
+        .gear-2 { width: 400px; height: 400px; top: 55%; left: -150px; transform: rotate(45deg); opacity: 0.05;}
 
         /* 🌐 底部科技透視網格 */
         .cyber-grid {
@@ -106,91 +98,88 @@
             opacity: 0.6; z-index: 1; pointer-events: none;
         }
 
-        /* 漸層文字設定 */
-        .gradient-text { display: inline-block; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        /* 🔧 修正 3：相容性 100% 的發光金屬文字 (捨棄會變方塊的漸層) */
+        .glow-text {
+            color: var(--text-color-main);
+            text-shadow: 0 3px 6px rgba(0,0,0,0.9), 0 0 15px var(--text-shadow-glow);
+            font-weight: 900;
+        }
 
         /* 🖼️ 左半部：人物海報區 */
-        .poster-section { width: 500px; height: 850px; padding: 30px 20px; box-sizing: border-box; }
+        .poster-section { width: 500px; padding: 30px 20px; box-sizing: border-box; }
         .content-wrapper { position: relative; z-index: 5; height: 100%; width: 100%; display: flex; flex-direction: column; align-items: center;}
         
         .top-name { 
             position: relative; z-index: 10;
-            font-size: 32px; font-weight: 900; letter-spacing: 5px; 
+            font-size: 36px; letter-spacing: 5px; 
             border-bottom: 2px solid var(--theme-border); padding-bottom: 10px; width: 80%; text-align: center; 
-            background: var(--gold-gradient); filter: drop-shadow(0 2px 5px rgba(212, 175, 55, 0.4));
         }
 
-        /* 🛡️ 立體排版修正：人像絕對置底，不受文字擠壓 */
+        /* 🛡️ 人像區域限制，不超出畫面 */
         .player-img-container { 
-            position: absolute; top: 60px; bottom: 0; left: 0; width: 100%; 
+            position: absolute; top: 80px; bottom: 0; left: 0; width: 100%; 
             display: flex; justify-content: center; align-items: flex-end; z-index: 2; 
         }
         .player-img-container img { 
-            max-width: 150%; max-height: 100%; object-fit: contain; object-position: bottom center;
+            max-width: 150%; max-height: 800px; object-fit: contain; object-position: bottom center;
             filter: drop-shadow(0 15px 25px rgba(0,0,0,1));
         }
 
-        /* 🖤 底部黑色漸層：掩護人像，凸顯文字 */
+        /* 🖤 黑色漸層掩護 */
         .bottom-gradient-overlay {
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 350px;
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 400px;
             background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
             z-index: 3; pointer-events: none;
         }
 
-        /* 🛡️ 立體排版修正：文字和 LOGO 絕對鎖死在底部 */
+        /* 🛡️ 底部資訊框絕對鎖死 */
         .bottom-info-box {
             position: absolute; bottom: 10px; left: 0; width: 100%;
             display: flex; flex-direction: column; align-items: center; z-index: 10;
         }
+        .rank-title-box { text-align: center; margin-bottom: 20px; }
+        .rank-title-box h3 { font-size: 22px; color: #ddd; margin: 0 0 5px 0; letter-spacing: 3px; text-shadow: 0 2px 5px #000; }
+        .rank-title-box h1 { font-size: 70px; margin: 0; letter-spacing: 15px; }
 
-        .rank-title-box { text-align: center; margin-bottom: 15px; }
-        .rank-title-box h3 { font-size: 20px; color: #ddd; margin: 0 0 5px 0; letter-spacing: 3px; font-weight: bold; text-shadow: 0 2px 5px #000; }
-        .rank-title-box h1 { 
-            font-size: 58px; margin: 0; letter-spacing: 15px; 
-            background: var(--gold-gradient); filter: drop-shadow(0 4px 10px rgba(0,0,0,1));
-        }
-
-        .logo-slot { width: 100%; height: 110px; display: flex; justify-content: center; align-items: center; margin-bottom: 10px; z-index: 10;}
+        .logo-slot { width: 100%; height: 130px; display: flex; justify-content: center; align-items: center; margin-bottom: 10px;}
         .logo-slot img { max-width: 90%; max-height: 90%; object-fit: contain; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.8)); }
 
         /* ⚙️ 右半部：零件配置陳列區 */
-        .parts-section { width: 420px; height: 850px; padding: 30px 20px; box-sizing: border-box; }
-        .parts-title { 
-            font-size: 28px; font-weight: 900; letter-spacing: 4px; margin-bottom: 25px; 
-            background: var(--gold-gradient); filter: drop-shadow(0 2px 8px rgba(0,0,0,0.8)); 
-        }
+        .parts-section { width: 560px; padding: 30px 20px 50px 20px; box-sizing: border-box; } /* 加寬零件區 */
+        .parts-title { font-size: 32px; letter-spacing: 4px; margin-bottom: 25px; }
 
         .config-block { width: 100%; margin-bottom: 30px; display: flex; flex-direction: column; align-items: center; }
-        .config-header { 
-            font-size: 18px; font-weight: bold; margin-bottom: 15px; letter-spacing: 3px; position: relative; 
-            background: var(--gold-gradient);
-        }
-        .config-header::before, .config-header::after { content: ''; position: absolute; top: 50%; width: 60px; height: 1px; background: var(--theme-border); }
+        .config-header { font-size: 20px; margin-bottom: 15px; letter-spacing: 3px; position: relative; }
+        .config-header::before, .config-header::after { content: ''; position: absolute; top: 50%; width: 70px; height: 1px; background: var(--theme-border); }
         .config-header::before { right: 100%; margin-right: 15px; }
         .config-header::after { left: 100%; margin-left: 15px; }
 
         .parts-grid-display { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; width: 100%; transition: all 0.3s ease; }
 
-        .part-item { width: 80px; display: flex; flex-direction: column; align-items: center; gap: 5px; transition: all 0.3s ease; }
-        .part-item img { width: 100%; height: 80px; object-fit: contain; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.8)); transition: all 0.3s ease; }
-        .part-name-text { font-size: 13px; font-weight: bold; color: #fff; text-align: center; width: 100%; word-break: break-all; text-shadow: 0 2px 4px #000; }
+        .part-item { width: 90px; display: flex; flex-direction: column; align-items: center; gap: 5px; transition: all 0.3s ease; }
+        .part-item img { width: 100%; height: 90px; object-fit: contain; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.8)); transition: all 0.3s ease; }
+        .part-name-text { font-size: 14px; font-weight: bold; color: #fff; text-align: center; width: 100%; word-break: break-all; text-shadow: 0 2px 4px #000; }
 
+        /* 智能放大模式 (保證高度不會超出) */
         .parts-grid-display.large-mode { gap: 25px; }
-        .parts-grid-display.large-mode .part-item { width: 115px; }
-        .parts-grid-display.large-mode .part-item img { height: 115px; filter: drop-shadow(0 8px 15px rgba(0,0,0,0.9)); }
-        .parts-grid-display.large-mode .part-name-text { font-size: 16px; letter-spacing: 1px; }
+        .parts-grid-display.large-mode .part-item { width: 125px; }
+        .parts-grid-display.large-mode .part-item img { height: 125px; filter: drop-shadow(0 8px 15px rgba(0,0,0,0.9)); }
+        .parts-grid-display.large-mode .part-name-text { font-size: 17px; letter-spacing: 1px; }
 
-        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); display: none; justify-content: center; align-items: center; z-index: 100; color: var(--gold-main); font-size: 24px; font-weight: bold; }
+        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); display: none; justify-content: center; align-items: center; z-index: 100; color: var(--theme-border); font-size: 24px; font-weight: bold; }
 
         /* 動態主題色彩設定 */
         #export-canvas.theme-gold {
             --panel-bg: #0d0a00; --theme-border: #d4af37; --theme-glow: rgba(212, 175, 55, 0.25); --theme-grid: rgba(212, 175, 55, 0.4);
+            --text-color-main: #ffe066; --text-shadow-glow: rgba(212, 175, 55, 0.8);
         }
         #export-canvas.theme-silver {
             --panel-bg: #00050d; --theme-border: #9ca3af; --theme-glow: rgba(0, 150, 255, 0.15); --theme-grid: rgba(0, 229, 255, 0.4);
+            --text-color-main: #e2e8f0; --text-shadow-glow: rgba(160, 174, 192, 0.8);
         }
         #export-canvas.theme-bronze {
             --panel-bg: #120500; --theme-border: #b87333; --theme-glow: rgba(255, 60, 0, 0.15); --theme-grid: rgba(255, 100, 0, 0.3);
+            --text-color-main: #ffb380; --text-shadow-glow: rgba(205, 127, 50, 0.8);
         }
     </style>
 </head>
@@ -203,7 +192,7 @@
         <label>選手姓名:</label>
         <input type="text" id="input-name" value="郭嘉弘" oninput="updateText('name')">
         
-        <label>名次配置 (自動切換齒輪與色系):</label>
+        <label>名次配置 (自動切換顏色):</label>
         <select id="input-rank" onchange="updateRank()">
             <option value="gold">🏆 冠軍</option>
             <option value="silver">🥈 亞軍</option>
@@ -222,18 +211,18 @@
 
         <div id="upload-sections"></div>
 
-        <button onclick="downloadImage()">⬇️ 下載殿堂級海報</button>
+        <button onclick="downloadImage()">⬇️ 下載完美殿堂海報</button>
     </div>
 
     <div class="preview-container">
         <div id="export-canvas" class="theme-gold">
             
             <div class="ornate-panel poster-section" id="poster-panel">
-                <div class="epic-gears"><div class="gear gear-1"></div><div class="gear gear-2"></div><div class="gear gear-3"></div></div>
+                <div class="epic-gears"><div class="gear gear-1"></div><div class="gear gear-2"></div></div>
                 <div class="cyber-grid"></div>
                 
                 <div class="content-wrapper">
-                    <div class="top-name gradient-text" id="display-name-top">郭嘉弘</div>
+                    <div class="top-name glow-text" id="display-name-top">郭嘉弘</div>
                     
                     <div class="player-img-container">
                         <img id="player-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="選手">
@@ -244,7 +233,7 @@
                     <div class="bottom-info-box">
                         <div class="rank-title-box">
                             <h3>門陣仔 大會勝者</h3>
-                            <h1 class="gradient-text" id="display-rank">冠軍</h1>
+                            <h1 class="glow-text" id="display-rank">冠軍</h1>
                         </div>
                         <div class="logo-slot">
                             <img id="custom-logo-img" src="" alt="" style="display: none;">
@@ -254,11 +243,11 @@
             </div>
 
             <div class="ornate-panel parts-section">
-                <div class="epic-gears" style="opacity: 0.6;"><div class="gear gear-1" style="top: 60%; right: -250px;"></div><div class="gear gear-2" style="top: 10%; left: -150px;"></div></div>
+                <div class="epic-gears"><div class="gear gear-1" style="top: 60%; right: -250px;"></div><div class="gear gear-2" style="top: 10%; left: -150px;"></div></div>
                 <div class="cyber-grid"></div>
 
                 <div class="content-wrapper" style="width: 100%;">
-                    <div class="parts-title gradient-text">陀螺配置陳列</div>
+                    <div class="parts-title glow-text">陀螺配置陳列</div>
                     <div id="showcase-box" style="width: 100%;">
                         </div>
                 </div>
@@ -289,7 +278,7 @@
 
                 const showcaseHtml = `
                 <div class="config-block">
-                    <div class="config-header gradient-text" id="header-c${i}">配置 ${i}</div>
+                    <div class="config-header glow-text" id="header-c${i}">配置 ${i}</div>
                     <div class="parts-grid-display" id="grid-c${i}">
                         <div class="part-item" id="slot-c${i}-p1"><img id="part-c${i}-p1" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt=""><div class="part-name-text" id="name-c${i}-p1"></div></div>
                         <div class="part-item" id="slot-c${i}-p2"><img id="part-c${i}-p2" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt=""><div class="part-name-text" id="name-c${i}-p2"></div></div>
@@ -311,25 +300,11 @@
         function updateRank() {
             const rankSelect = document.getElementById('input-rank');
             const displayRank = document.getElementById('display-rank');
-            const displayName = document.getElementById('display-name-top');
-            const partsTitle = document.querySelector('.parts-title');
             const exportCanvas = document.getElementById('export-canvas');
             
             let rankText = rankSelect.options[rankSelect.selectedIndex].text.substring(3).trim(); 
             displayRank.innerText = rankText;
-
-            exportCanvas.className = ''; 
-            exportCanvas.classList.add(`theme-${rankSelect.value}`);
-
-            let gradientVar = `var(--${rankSelect.value}-gradient)`;
-            displayRank.style.background = gradientVar; displayRank.style.webkitBackgroundClip = 'text';
-            displayName.style.background = gradientVar; displayName.style.webkitBackgroundClip = 'text';
-            partsTitle.style.background = gradientVar; partsTitle.style.webkitBackgroundClip = 'text';
-
-            for(let i=1; i<=3; i++) {
-                let header = document.getElementById(`header-c${i}`);
-                if(header) { header.style.background = gradientVar; header.style.webkitBackgroundClip = 'text'; }
-            }
+            exportCanvas.className = `theme-${rankSelect.value}`;
         }
 
         function checkConfigState(cIdx) {
@@ -406,6 +381,9 @@
             const exportCanvas = document.getElementById('export-canvas'); const nameSelect = document.getElementById('input-name');
             const rankSelect = document.getElementById('input-rank'); let rankText = rankSelect.options[rankSelect.selectedIndex].text.substring(3).trim(); 
             const fileName = `鬥陣仔_${rankText}_${nameSelect.value}.png`;
+
+            // 確保網頁不在最頂端時截圖也完整
+            window.scrollTo(0,0);
 
             html2canvas(exportCanvas, { scale: 2, useCORS: true, backgroundColor: '#000000' }).then(canvas => {
                 const link = document.createElement('a'); link.download = fileName; link.href = canvas.toDataURL('image/png', 1.0); link.click();
