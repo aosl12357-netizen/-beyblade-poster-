@@ -10,16 +10,16 @@
     <style>
         :root {
             --bg-dark: #12141a;
-            --panel-bg: #0a0a0a;
+            --panel-bg: #0a0c12; 
             --gold-light: #fef08a;
             --gold-main: #d4af37;
             --gold-dark: #997a00;
             --text-gold: #fde047;
             
-            --theme-glow: rgba(212, 175, 55, 0.2);
+            --theme-glow: rgba(212, 175, 55, 0.25);
             --theme-border: #d4af37;
+            --theme-grid: rgba(0, 229, 255, 0.4);
 
-            /* 流金漸層色調 */
             --gold-gradient: linear-gradient(180deg, #fff2a8 0%, #ffd700 50%, #b8860b 100%);
             --silver-gradient: linear-gradient(180deg, #ffffff 0%, #a8a8a8 50%, #707070 100%);
             --bronze-gradient: linear-gradient(180deg, #ffb380 0%, #cd7f32 50%, #8b4513 100%);
@@ -40,16 +40,9 @@
 
         /* 👑 左側控制面板 */
         .controls {
-            flex: 1; 
-            background: var(--bg-dark); 
-            padding: 20px; 
-            border-radius: 8px;
-            display: flex; flex-direction: column; gap: 15px; 
-            max-width: 350px;
-            overflow-y: auto; 
-            border: 2px solid var(--theme-border);
-            outline: 1px solid var(--theme-border);
-            outline-offset: -6px;
+            flex: 1; background: var(--bg-dark); padding: 20px; border-radius: 8px;
+            display: flex; flex-direction: column; gap: 15px; max-width: 350px; overflow-y: auto; 
+            border: 2px solid var(--theme-border); outline: 1px solid var(--theme-border); outline-offset: -6px;
         }
 
         .controls h2 { margin-top: 0; font-size: 22px; text-align: center; color: var(--theme-border); border-bottom: 1px solid #333; padding-bottom: 10px;}
@@ -68,78 +61,93 @@
         button { background: linear-gradient(to bottom, var(--gold-light), var(--theme-border)); color: #000; border: none; padding: 15px; font-weight: 900; border-radius: 4px; cursor: pointer; font-size: 18px; margin-top: 10px; transition: 0.2s;}
         button:hover { filter: brightness(1.2); }
 
-        /* 👑 右側預覽/下載畫布 */
+        /* 👑 右側預覽畫布 */
         .preview-container { flex: 3; display: flex; justify-content: center; align-items: flex-start; overflow-y: auto; }
         #export-canvas { display: flex; gap: 20px; background-color: #000; padding: 20px; transition: all 0.5s ease;}
 
-        /* 🎨 面板共用華麗背景 (動態氣場) */
+        /* 🎨 面板共用華麗背景 */
         .ornate-panel {
             background-color: var(--panel-bg);
             position: relative;
             border: 2px solid var(--theme-border);
-            outline: 1px solid var(--theme-border);
-            outline-offset: -8px;
+            outline: 1px solid var(--theme-border); outline-offset: -8px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.9);
-            overflow: hidden;
-            transition: all 0.5s ease;
+            overflow: hidden; transition: all 0.5s ease;
         }
 
+        /* 星空與漸層底色 */
         .ornate-panel::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% 40%, var(--theme-glow) 0%, transparent 70%);
-            z-index: 0; pointer-events: none; transition: background 0.5s ease;
-        }
-        .ornate-panel::after {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: 
-                radial-gradient(2px 2px at 30px 40px, rgba(255,255,255,0.4), rgba(0,0,0,0)),
-                radial-gradient(2px 2px at 80px 90px, rgba(255,255,255,0.3), rgba(0,0,0,0)),
-                radial-gradient(3px 3px at 150px 30px, rgba(255,255,255,0.5), rgba(0,0,0,0));
-            background-size: 200px 200px;
-            opacity: 0.4; z-index: 0; pointer-events: none;
+            background: radial-gradient(circle at 50% 40%, var(--theme-glow) 0%, transparent 80%),
+                        url('https://www.transparenttextures.com/patterns/stardust.png');
+            opacity: 0.8; z-index: 0; pointer-events: none; transition: background 0.5s ease;
         }
 
-        .ornate-panel > * { position: relative; z-index: 2; }
+        /* ⚙️ 核心特效：帥帥齒輪 */
+        .epic-gears {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            overflow: hidden; z-index: 1; pointer-events: none;
+        }
+        .gear {
+            position: absolute;
+            background-color: var(--theme-border);
+            /* 使用超清 SVG 齒輪作為遮罩，完美呈現金屬質感 */
+            -webkit-mask-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50,15 c-1.5,0-3,1-3,2.5 v5 c-3.5,0.7-6.8,2-9.7,3.8 l-3.5-3.5 c-1.1-1.1-2.9-1.1-4,0 l-4.2,4.2 c-1.1,1.1-1.1,2.9,0,4 l3.5,3.5 c-1.8,2.9-3.1,6.2-3.8,9.7 h-5 c-1.5,0-2.5,1.5-2.5,3 v6 c0,1.5,1,2.5,2.5,2.5 h5 c0.7,3.5,2,6.8,3.8,9.7 l-3.5,3.5 c-1.1,1.1-1.1,2.9,0,4 l4.2,4.2 c1.1,1.1,2.9,1.1,4,0 l3.5-3.5 c2.9,1.8,6.2,3.1,9.7,3.8 v5 c0,1.5,1.5,2.5,3,2.5 h6 c1.5,0,3-1,3-2.5 v-5 c3.5-0.7,6.8-2,9.7-3.8 l3.5,3.5 c1.1,1.1,2.9,1.1,4,0 l4.2-4.2 c1.1-1.1,1.1-2.9,0-4 l-3.5-3.5 c1.8-2.9,3.1-6.2,3.8-9.7 h5 c1.5,0,2.5-1.5,2.5-3 v-6 c0-1.5-1-2.5-2.5-2.5 h-5 c-0.7-3.5-2-6.8-3.8-9.7 l3.5-3.5 c1.1-1.1,1.1-2.9,0-4 l-4.2-4.2 c-1.1-1.1-2.9-1.1-4,0 l-3.5,3.5 c-2.9-1.8-6.2-3.1-9.7-3.8 v-5 c0-1.5-1.5-2.5-3-2.5 H50 z M50,35 A15,15 0 1,1 50,65 A15,15 0 1,1 50,35 z'/%3E%3C/svg%3E");
+            mask-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50,15 c-1.5,0-3,1-3,2.5 v5 c-3.5,0.7-6.8,2-9.7,3.8 l-3.5-3.5 c-1.1-1.1-2.9-1.1-4,0 l-4.2,4.2 c-1.1,1.1-1.1,2.9,0,4 l3.5,3.5 c-1.8,2.9-3.1,6.2-3.8,9.7 h-5 c-1.5,0-2.5,1.5-2.5,3 v6 c0,1.5,1,2.5,2.5,2.5 h5 c0.7,3.5,2,6.8,3.8,9.7 l-3.5,3.5 c-1.1,1.1-1.1,2.9,0,4 l4.2,4.2 c1.1,1.1,2.9,1.1,4,0 l3.5-3.5 c2.9,1.8,6.2,3.1,9.7,3.8 v5 c0,1.5,1.5,2.5,3,2.5 h6 c1.5,0,3-1,3-2.5 v-5 c3.5-0.7,6.8-2,9.7-3.8 l3.5,3.5 c1.1,1.1,2.9,1.1,4,0 l4.2-4.2 c1.1-1.1,1.1-2.9,0-4 l-3.5-3.5 c1.8-2.9,3.1-6.2,3.8-9.7 h5 c1.5,0,2.5-1.5,2.5-3 v-6 c0-1.5-1-2.5-2.5-2.5 h-5 c-0.7-3.5-2-6.8-3.8-9.7 l3.5-3.5 c1.1-1.1,1.1-2.9,0-4 l-4.2-4.2 c-1.1-1.1-2.9-1.1-4,0 l-3.5,3.5 c-2.9-1.8-6.2-3.1-9.7-3.8 v-5 c0-1.5-1.5-2.5-3-2.5 H50 z M50,35 A15,15 0 1,1 50,65 A15,15 0 1,1 50,35 z'/%3E%3C/svg%3E");
+            -webkit-mask-size: contain; mask-size: contain;
+            -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+            opacity: 0.15;
+            filter: drop-shadow(0 0 10px var(--theme-border));
+        }
+        .gear-1 { width: 550px; height: 550px; top: 10%; right: -200px; transform: rotate(15deg); }
+        .gear-2 { width: 350px; height: 350px; top: 55%; left: -120px; transform: rotate(45deg); opacity: 0.1;}
+        .gear-3 { width: 250px; height: 250px; top: 5%; left: 30px; transform: rotate(70deg); opacity: 0.08;}
+
+        /* 🌐 底部科技透視網格 */
+        .cyber-grid {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 22%;
+            background-image: 
+                linear-gradient(var(--theme-grid) 1px, transparent 1px),
+                linear-gradient(90deg, var(--theme-grid) 1px, transparent 1px);
+            background-size: 40px 40px;
+            transform: perspective(400px) rotateX(70deg);
+            transform-origin: bottom;
+            opacity: 0.6; z-index: 1; pointer-events: none;
+        }
+
+        .ornate-panel > .content-wrapper { position: relative; z-index: 5; height: 100%; display: flex; flex-direction: column; align-items: center;}
 
         /* 漸層文字共用設定 */
-        .gradient-text {
-            display: inline-block;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+        .gradient-text { display: inline-block; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
         /* 🖼️ 左半部：人物海報區 */
-        .poster-section { width: 500px; height: 850px; display: flex; flex-direction: column; align-items: center; padding: 30px 20px; box-sizing: border-box; }
+        .poster-section { width: 500px; height: 850px; padding: 30px 20px; box-sizing: border-box; }
         
         .top-name { 
             font-size: 32px; font-weight: 900; letter-spacing: 5px; 
             border-bottom: 2px solid var(--theme-border); padding-bottom: 10px; margin-bottom: 15px; width: 80%; text-align: center; 
-            background: var(--gold-gradient);
-            filter: drop-shadow(0 2px 5px rgba(212, 175, 55, 0.4));
+            background: var(--gold-gradient); filter: drop-shadow(0 2px 5px rgba(212, 175, 55, 0.4));
         }
 
         .player-img-container { flex: 1; width: 100%; display: flex; justify-content: center; align-items: flex-end; position: relative; }
-        .player-img-container img { max-width: 135%; max-height: 520px; object-fit: contain; filter: drop-shadow(0 15px 25px rgba(0,0,0,1)); }
+        .player-img-container img { max-width: 145%; max-height: 550px; object-fit: contain; filter: drop-shadow(0 15px 25px rgba(0,0,0,1)); z-index: 10;}
 
         .rank-title-box { text-align: center; margin-top: 15px; margin-bottom: 15px; }
         .rank-title-box h3 { font-size: 20px; color: #ddd; margin: 0 0 5px 0; letter-spacing: 3px; font-weight: bold; }
         .rank-title-box h1 { 
             font-size: 58px; margin: 0; letter-spacing: 15px; 
-            background: var(--gold-gradient);
-            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.8));
+            background: var(--gold-gradient); filter: drop-shadow(0 4px 10px rgba(0,0,0,0.8));
         }
 
-        /* LOGO 槽 */
-        .logo-slot { width: 100%; height: 100px; display: flex; justify-content: center; align-items: center; margin-bottom: 25px; }
-        .logo-slot img { max-width: 90%; max-height: 90%; object-fit: contain; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.8)); }
+        .logo-slot { width: 100%; height: 100px; display: flex; justify-content: center; align-items: center; margin-bottom: 25px; z-index: 10;}
+        .logo-slot img { max-width: 90%; max-height: 90%; object-fit: contain; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5)); }
 
         /* ⚙️ 右半部：零件配置陳列區 */
-        .parts-section { width: 420px; height: 850px; display: flex; flex-direction: column; align-items: center; padding: 30px 20px; box-sizing: border-box; }
+        .parts-section { width: 420px; height: 850px; padding: 30px 20px; box-sizing: border-box; }
         
         .parts-title { 
             font-size: 28px; font-weight: 900; letter-spacing: 4px; margin-bottom: 25px; 
-            background: var(--gold-gradient);
-            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.8)); 
+            background: var(--gold-gradient); filter: drop-shadow(0 2px 8px rgba(0,0,0,0.8)); 
         }
 
         .config-block { width: 100%; margin-bottom: 30px; display: flex; flex-direction: column; align-items: center; }
@@ -152,23 +160,13 @@
         .config-header::before { right: 100%; margin-right: 15px; }
         .config-header::after { left: 100%; margin-left: 15px; }
 
-        /* ✨ 零件網格容器 */
-        .parts-grid-display {
-            display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; width: 100%; transition: all 0.3s ease;
-        }
+        .parts-grid-display { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; width: 100%; transition: all 0.3s ease; }
 
-        /* 預設小尺寸 */
-        .part-item {
-            width: 80px; display: flex; flex-direction: column; align-items: center; gap: 5px; transition: all 0.3s ease;
-        }
-        .part-item img {
-            width: 100%; height: 80px; object-fit: contain; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.8)); transition: all 0.3s ease;
-        }
-        .part-name-text {
-            font-size: 13px; font-weight: bold; color: #fff; text-align: center; width: 100%; word-break: break-all; text-shadow: 0 2px 4px #000;
-        }
+        .part-item { width: 80px; display: flex; flex-direction: column; align-items: center; gap: 5px; transition: all 0.3s ease; }
+        .part-item img { width: 100%; height: 80px; object-fit: contain; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.8)); transition: all 0.3s ease; }
+        .part-name-text { font-size: 13px; font-weight: bold; color: #fff; text-align: center; width: 100%; word-break: break-all; text-shadow: 0 2px 4px #000; }
 
-        /* ✨ 智能放大模式 (1~3 個零件) */
+        /* 智能放大模式 (1~3 個零件) */
         .parts-grid-display.large-mode { gap: 25px; }
         .parts-grid-display.large-mode .part-item { width: 115px; }
         .parts-grid-display.large-mode .part-item img { height: 115px; filter: drop-shadow(0 8px 15px rgba(0,0,0,0.9)); }
@@ -178,13 +176,13 @@
 
         /* 動態主題色彩設定 */
         #export-canvas.theme-gold {
-            --panel-bg: #141100; --theme-border: #d4af37; --theme-glow: rgba(212, 175, 55, 0.25);
+            --panel-bg: #0d0a00; --theme-border: #d4af37; --theme-glow: rgba(212, 175, 55, 0.25); --theme-grid: rgba(212, 175, 55, 0.4);
         }
         #export-canvas.theme-silver {
-            --panel-bg: #000a14; --theme-border: #9ca3af; --theme-glow: rgba(0, 150, 255, 0.2);
+            --panel-bg: #00050d; --theme-border: #9ca3af; --theme-glow: rgba(0, 150, 255, 0.15); --theme-grid: rgba(0, 229, 255, 0.4);
         }
         #export-canvas.theme-bronze {
-            --panel-bg: #1a0a00; --theme-border: #b87333; --theme-glow: rgba(255, 60, 0, 0.15);
+            --panel-bg: #120500; --theme-border: #b87333; --theme-glow: rgba(255, 60, 0, 0.15); --theme-grid: rgba(255, 100, 0, 0.3);
         }
     </style>
 </head>
@@ -198,7 +196,7 @@
         <label>選手姓名:</label>
         <input type="text" id="input-name" value="郭嘉弘" oninput="updateText('name')">
         
-        <label>名次配置 (自動切換文字與帥氣背景):</label>
+        <label>名次配置 (自動切換齒輪與色系):</label>
         <select id="input-rank" onchange="updateRank()">
             <option value="gold">🏆 冠軍</option>
             <option value="silver">🥈 亞軍</option>
@@ -221,27 +219,35 @@
     </div>
 
     <div class="preview-container">
-        <!-- 預設為黃金主題 -->
         <div id="export-canvas" class="theme-gold">
             
             <div class="ornate-panel poster-section" id="poster-panel">
-                <div class="top-name gradient-text" id="display-name-top">郭嘉弘</div>
-                <div class="player-img-container">
-                    <img id="player-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="選手">
-                </div>
-                <div class="rank-title-box">
-                    <h3>門陣仔 大會勝者</h3>
-                    <h1 class="gradient-text" id="display-rank">冠軍</h1>
-                </div>
-                <div class="logo-slot">
-                    <img id="custom-logo-img" src="" alt="" style="display: none;">
+                <div class="epic-gears"><div class="gear gear-1"></div><div class="gear gear-2"></div><div class="gear gear-3"></div></div>
+                <div class="cyber-grid"></div>
+                
+                <div class="content-wrapper">
+                    <div class="top-name gradient-text" id="display-name-top">郭嘉弘</div>
+                    <div class="player-img-container">
+                        <img id="player-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="選手">
+                    </div>
+                    <div class="rank-title-box">
+                        <h3>門陣仔 大會勝者</h3>
+                        <h1 class="gradient-text" id="display-rank">冠軍</h1>
+                    </div>
+                    <div class="logo-slot">
+                        <img id="custom-logo-img" src="" alt="" style="display: none;">
+                    </div>
                 </div>
             </div>
 
             <div class="ornate-panel parts-section">
-                <div class="parts-title gradient-text">陀螺配置陳列</div>
-                <div id="showcase-box" style="width: 100%;">
-                    <!-- 動態生成展示區 -->
+                <div class="epic-gears" style="opacity: 0.6;"><div class="gear gear-1" style="top: 60%; right: -250px;"></div><div class="gear gear-2" style="top: 10%; left: -150px;"></div></div>
+                <div class="cyber-grid"></div>
+
+                <div class="content-wrapper" style="width: 100%;">
+                    <div class="parts-title gradient-text">陀螺配置陳列</div>
+                    <div id="showcase-box" style="width: 100%;">
+                        </div>
                 </div>
             </div>
 
@@ -299,29 +305,20 @@
             let rankText = rankSelect.options[rankSelect.selectedIndex].text.substring(3).trim(); 
             displayRank.innerText = rankText;
 
-            // 切換主題
             exportCanvas.className = ''; 
             exportCanvas.classList.add(`theme-${rankSelect.value}`);
 
-            // 切換漸層字體
             let gradientVar = `var(--${rankSelect.value}-gradient)`;
-            displayRank.style.background = gradientVar;
-            displayRank.style.webkitBackgroundClip = 'text';
-            displayName.style.background = gradientVar;
-            displayName.style.webkitBackgroundClip = 'text';
-            partsTitle.style.background = gradientVar;
-            partsTitle.style.webkitBackgroundClip = 'text';
+            displayRank.style.background = gradientVar; displayRank.style.webkitBackgroundClip = 'text';
+            displayName.style.background = gradientVar; displayName.style.webkitBackgroundClip = 'text';
+            partsTitle.style.background = gradientVar; partsTitle.style.webkitBackgroundClip = 'text';
 
             for(let i=1; i<=3; i++) {
                 let header = document.getElementById(`header-c${i}`);
-                if(header) {
-                    header.style.background = gradientVar;
-                    header.style.webkitBackgroundClip = 'text';
-                }
+                if(header) { header.style.background = gradientVar; header.style.webkitBackgroundClip = 'text'; }
             }
         }
 
-        // ✨ 智能放大機制核心檢查邏輯 ✨
         function checkConfigState(cIdx) {
             let activeCount = 0;
             for(let p = 1; p <= 6; p++) {
@@ -353,40 +350,24 @@
             }
         }
 
-        function updatePartName(cIdx, pIdx, value) {
-            document.getElementById(`name-c${cIdx}-p${pIdx}`).innerText = value;
-            checkConfigState(cIdx);
-        }
-
+        function updatePartName(cIdx, pIdx, value) { document.getElementById(`name-c${cIdx}-p${pIdx}`).innerText = value; checkConfigState(cIdx); }
         function previewPart(event, cIdx, pIdx) {
-            const output = document.getElementById(`part-c${cIdx}-p${pIdx}`);
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function() {
-                output.src = reader.result;
-                checkConfigState(cIdx);
-            }
+            const output = document.getElementById(`part-c${cIdx}-p${pIdx}`); const file = event.target.files[0]; if (!file) return;
+            const reader = new FileReader(); reader.onload = function() { output.src = reader.result; checkConfigState(cIdx); }
             reader.readAsDataURL(file);
         }
 
         function compressImage(file, maxWidth, maxHeight) {
             return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
+                const reader = new FileReader(); reader.readAsDataURL(file);
                 reader.onload = function (event) {
-                    const img = new Image();
-                    img.src = event.target.result;
+                    const img = new Image(); img.src = event.target.result;
                     img.onload = function () {
-                        let width = img.width;
-                        let height = img.height;
+                        let width = img.width; let height = img.height;
                         if (width > height) { if (width > maxWidth) { height *= maxWidth / width; width = maxWidth; }
                         } else { if (height > maxHeight) { width *= maxHeight / height; height = maxHeight; } }
-                        const canvas = document.createElement('canvas');
-                        canvas.width = width; canvas.height = height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, width, height);
+                        const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height;
+                        const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height);
                         canvas.toBlob((blob) => { resolve(new File([blob], file.name, { type: 'image/png' })); }, 'image/png');
                     };
                 };
@@ -394,48 +375,30 @@
         }
 
         async function previewImageAutoBg(event, targetId, isPlayer = false) {
-            const loadingOverlay = document.getElementById('loading-overlay');
-            const output = document.getElementById(targetId);
-            let file = event.target.files[0];
-            if (!file) return;
-
+            const loadingOverlay = document.getElementById('loading-overlay'); const output = document.getElementById(targetId);
+            let file = event.target.files[0]; if (!file) return;
             loadingOverlay.style.display = 'flex';
             try {
                 if (isPlayer && file.size > 1024 * 1024) file = await compressImage(file, 800, 800);
-                const imageBlob = await imglyRemoveBackground(file);
-                const url = URL.createObjectURL(imageBlob);
-                output.src = url;
-                output.style.display = 'block';
+                const imageBlob = await imglyRemoveBackground(file); const url = URL.createObjectURL(imageBlob);
+                output.src = url; output.style.display = 'block';
             } catch (error) {
                 console.error("去背失敗，載入原圖:", error);
-                const reader = new FileReader();
-                reader.onload = () => { output.src = reader.result; output.style.display = 'block'; };
+                const reader = new FileReader(); reader.onload = () => { output.src = reader.result; output.style.display = 'block'; };
                 reader.readAsDataURL(file);
-            } finally {
-                loadingOverlay.style.display = 'none';
-            }
+            } finally { loadingOverlay.style.display = 'none'; }
         }
 
         function downloadImage() {
-            const exportCanvas = document.getElementById('export-canvas');
-            const nameSelect = document.getElementById('input-name');
-            const rankSelect = document.getElementById('input-rank');
-            let rankText = rankSelect.options[rankSelect.selectedIndex].text.substring(3).trim(); 
+            const exportCanvas = document.getElementById('export-canvas'); const nameSelect = document.getElementById('input-name');
+            const rankSelect = document.getElementById('input-rank'); let rankText = rankSelect.options[rankSelect.selectedIndex].text.substring(3).trim(); 
             const fileName = `鬥陣仔_${rankText}_${nameSelect.value}.png`;
 
-            html2canvas(exportCanvas, {
-                scale: 2, 
-                useCORS: true, 
-                backgroundColor: '#000000' 
-            }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = fileName;
-                link.href = canvas.toDataURL('image/png', 1.0);
-                link.click();
+            html2canvas(exportCanvas, { scale: 2, useCORS: true, backgroundColor: '#000000' }).then(canvas => {
+                const link = document.createElement('a'); link.download = fileName; link.href = canvas.toDataURL('image/png', 1.0); link.click();
             });
         }
         
-        // 初始套用一次漸層
         updateRank();
     </script>
 </body>
